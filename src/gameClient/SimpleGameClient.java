@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import Server.Game_Server;
 import Server.game_service;
+import dataStructure.DGraph;
 import oop_dataStructure.OOP_DGraph;
 import oop_dataStructure.oop_edge_data;
 import oop_dataStructure.oop_graph;
@@ -31,14 +32,20 @@ import oop_dataStructure.oop_graph;
  */
 public class SimpleGameClient {
 	public static void main(String[] a) {
-		test1();}
+		test1();
+		
+		}
 	public static void test1() {
 		int scenario_num = 2;
 		game_service game = Game_Server.getServer(scenario_num); // you have [0,23] games
 		String g = game.getGraph();
 		OOP_DGraph gg = new OOP_DGraph();
 		gg.init(g);
+		//MyGameGUI f = new MyGameGUI(game, gg);
 		String info = game.toString();
+		System.out.println(g);
+		System.out.println(info);
+	
 		JSONObject line;
 		try {
 			line = new JSONObject(info);
@@ -57,9 +64,10 @@ public class SimpleGameClient {
 		catch (JSONException e) {e.printStackTrace();}
 		game.startGame();
 		// should be a Thread!!!
-		while(game.isRunning()) {
-			moveRobots(game, gg);
-		}
+		moveRobots(game, gg);
+		/*
+		 * while(game.isRunning()) { moveRobots(game, gg); }
+		 */
 		String results = game.toString();
 		System.out.println("Game Over: "+results);
 	}
@@ -72,6 +80,11 @@ public class SimpleGameClient {
 	 */
 	private static void moveRobots(game_service game, oop_graph gg) {
 		List<String> log = game.move();
+		
+		Iterator<String> iter = log.iterator();
+		while(iter.hasNext()) {
+			System.out.println(iter.next());
+		}
 		if(log!=null) {
 			long t = game.timeToEnd();
 			for(int i=0;i<log.size();i++) {
@@ -89,6 +102,7 @@ public class SimpleGameClient {
 						System.out.println("Turn to node: "+dest+"  time to end:"+(t/1000));
 						System.out.println(ttt);
 					}
+					System.out.println(game.getRobots().get(0).toString());
 				} 
 				catch (JSONException e) {e.printStackTrace();}
 			}
