@@ -30,9 +30,7 @@ import oop_dataStructure.oop_edge_data;
 import oop_dataStructure.oop_graph;
 
 public class MyGameGUI implements Runnable {
-	private game_service _game;
-	private DGraph _graph;
-	private ArrayList<Robots> rob_list;
+
 
 	public MyGameGUI(game_service game, DGraph g){
 		setGame(game);
@@ -43,9 +41,14 @@ public class MyGameGUI implements Runnable {
 	private void init() {
 		StdDraw.setCanvasSize(1000, 800);
 		StdDraw.enableDoubleBuffering();
+		set_x(this.getGraph().GraphScaleX());
+		set_y(this.getGraph().GraphScaleY());
 		Robots();
+		Fruits();
 		draw();
 		drawRobots();
+		drawFruits();
+		StdDraw.background((int)(this.get_x().get_max()+this.get_x().get_min())/2,(int) (this.get_y().get_max()+this.get_y().get_min())/2,"data\\A0.png");
 		StdDraw.show();
 		StdDraw.Visible();
 		run();
@@ -60,24 +63,32 @@ public class MyGameGUI implements Runnable {
 	 * @param gg
 	 * @param log
 	 */
-	private void moveRobots(game_service game, DGraph gg) {
-		List<String> log = game.move();
+	private void moveRobots() {
+		// update fruits
+		List<String> fruits = this.getGame().getFruits();
+		for(int i = 0; i < fruits.size(); i++) {
+			this.getFruitList().get(i).init(fruits.get(i));
+		}
+		
+		List<String> log = this.getGame().move();
 		if (log != null) {
-			long t = game.timeToEnd();
+			long t = this.getGame().timeToEnd();
 			for (int i = 0; i < log.size(); i++) {
 				Robots r = this.getRobList().get(i);
 				r.init(log.get(i));
-			
+				
 				this.draw();
 				this.drawRobots();
+				this.drawFruits();
 				StdDraw.show();
-				StdDraw.pause(50);
-				
+				//StdDraw.pause(50);
 				
 
+
+
 				if (r.getDest() == -1) {
-					r.setDest(nextNode(gg, r.getSrc()));
-					game.chooseNextEdge(r.getId(), r.getDest());
+					r.setDest(nextNode(this.getGraph(), r.getSrc()));
+					this.getGame().chooseNextEdge(r.getId(), r.getDest());
 				}
 			}
 		}
@@ -114,7 +125,7 @@ public class MyGameGUI implements Runnable {
 		this.getGame().startGame(); // should be a Thread!!! moveRobots(game, gg);
 
 		while(this.getGame().isRunning()) {
-			moveRobots(this.getGame(), this.getGraph()); 
+			moveRobots(); 
 		}
 
 
@@ -129,10 +140,29 @@ public class MyGameGUI implements Runnable {
 		Iterator<Robots> r_iter = this.getRobList().iterator();
 		while(r_iter.hasNext()) {
 			Robots r = r_iter.next();
-			StdDraw.setPenColor(Color.MAGENTA);
-			StdDraw.setPenRadius(0.05);
-			//StdDraw.rectangle(r.getPosX(), r.getPosY(), 10, 20);
-			StdDraw.point(r.getPosX(), r.getPosY());
+			StdDraw.picture(r.getPosX(),r.getPosY(), "data\\p"+r.getId()+".png");
+			
+		}
+
+	}
+
+	/**
+	 * drawFruits
+	 */
+	public void drawFruits() {
+		//draw Robots
+		Iterator<Fruits> f_iter = this.getFruitList().iterator();
+		while(f_iter.hasNext()) {
+			Fruits f = f_iter.next();
+			if(f.getType() == 1) {
+				StdDraw.picture(f.getPosX(),f.getPosY(), "data\\apple.png");
+				
+			}
+			else {
+				StdDraw.picture(f.getPosX(),f.getPosY(), "data\\banana.png");
+			
+
+			}
 		}
 
 	}
@@ -146,10 +176,9 @@ public class MyGameGUI implements Runnable {
 	 */
 	public void draw() {
 		StdDraw.clear();
-		Range x = this.getGraph().GraphScaleX();
-		Range y = this.getGraph().GraphScaleY();
+		Range x = this.get_x();
+		Range y = this.get_y();
 
-		//StdDraw.picture(0,0, "http://www.moogaz.co.il/FunnyPictures/12.jpg", 50, 50);
 
 		StdDraw.setXscale(x.get_min() - x.get_min()*0.00001, x.get_max() + x.get_min()*0.00001);
 		StdDraw.setYscale(y.get_min() - y.get_min()*0.00001, y.get_max() + y.get_min()*0.00001);
@@ -202,7 +231,10 @@ public class MyGameGUI implements Runnable {
 			// node key
 			StdDraw.setPenColor(Color.BLACK);
 			StdDraw.setFont(new Font("Arial", Font.PLAIN, 20));
-			StdDraw.text(current.getLocation().x(), current.getLocation().y() + 0.25, String.valueOf(current.getKey()));
+			StdDraw.text(current.getLocation().x(), current.getLocation().y() + 0.0001, String.valueOf(current.getKey()));
+			
+			// draw timer
+			StdDraw.text(this.get_x().get_max() - 0.002, this.get_y().get_min(), "Time: "+this.getGame().timeToEnd());
 		}
 	}
 
@@ -228,8 +260,15 @@ public class MyGameGUI implements Runnable {
 		while (iter.hasNext()) {
 			this.getRobList().add(new Robots(iter.next()));
 		}
+	}
 
-
+	private void Fruits() {
+		// adding fruits
+		setFruitList(new ArrayList<Fruits>());
+		Iterator<String> iter = this.getGame().getFruits().iterator();
+		while (iter.hasNext()) {
+			this.getFruitList().add(new Fruits(iter.next()));
+		}
 	}
 
 	public DGraph getGraph() {
@@ -249,10 +288,38 @@ public class MyGameGUI implements Runnable {
 	}
 
 	public ArrayList<Robots> getRobList() {
-		return rob_list;
+		return _rob_list;
 	}
 
 	public void setRobList(ArrayList<Robots> rob_list) {
-		this.rob_list = rob_list;
+		this._rob_list = rob_list;
 	}
+
+	public ArrayList<Fruits> getFruitList() {
+		return _fruit_list;
+	}
+
+	public void setFruitList(ArrayList<Fruits> fruit_list) {
+		this._fruit_list = fruit_list;
+	}
+	public Range get_x() {
+		return _x;
+	}
+
+	public void set_x(Range _x) {
+		this._x = _x;
+	}
+	public Range get_y() {
+		return _y;
+	}
+
+	public void set_y(Range _y) {
+		this._y = _y;
+	}
+	/**** data *****/
+	private Range _x, _y;
+	private game_service _game;
+	private DGraph _graph;
+	private ArrayList<Robots> _rob_list;
+	private ArrayList<Fruits> _fruit_list;
 }

@@ -35,13 +35,13 @@ public class SimpleGameClient {
 	}
 
 	public static void test1() {
-		int scenario_num = 17;
+		int scenario_num = 19;
 		game_service game = Game_Server.getServer(scenario_num); // you have [0,23] games
 		String g = game.getGraph();
-		DGraph gg = new DGraph();
+		OOP_DGraph gg = new OOP_DGraph();
 		gg.init(g);
 		// System.out.println(gg.getNode(0).getLocation());
-		MyGameGUI f = new MyGameGUI(game, gg);
+		// MyGameGUI f = new MyGameGUI(game, gg);
 		String info = game.toString();
 		System.out.println(g);
 		System.out.println(info);
@@ -71,14 +71,14 @@ public class SimpleGameClient {
 			e.printStackTrace();
 		}
 
-		/*
-		 * game.startGame(); // should be a Thread!!! moveRobots(game, gg);
-		 * 
-		 * while(game.isRunning()) { moveRobots(game, gg); }
-		 * 
-		 * String results = game.toString(); System.out.println("Game Over: "+results);
-		 * 
-		 */
+		
+		  game.startGame(); // should be a Thread!!! moveRobots(game, gg);
+		//  moveRobots(game, gg);
+		// while(game.isRunning()) { moveRobots(game, gg); }
+		  
+		  String results = game.toString(); System.out.println("Game Over: "+results);
+		 
+		 
 	}
 
 	/**
@@ -92,6 +92,7 @@ public class SimpleGameClient {
 	private static void moveRobots(game_service game, oop_graph gg) {
 		List<String> log = game.move();
 
+		
 		Iterator<String> iter = log.iterator();
 		while (iter.hasNext()) {
 			System.out.println(iter.next());

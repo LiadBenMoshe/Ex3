@@ -708,8 +708,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		frame.setContentPane(draw);
 		frame.addKeyListener(std);    // JLabel cannot get keyboard focus
 		frame.setResizable(false);
-		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);            // closes all windows
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);      // closes only current window
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);            // closes all windows
+		//frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);      // closes only current window
 		frame.setTitle("GUI Graph");
 		frame.setJMenuBar(createMenuBar());
 		frame.pack();
@@ -1339,6 +1339,23 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         throw new IllegalArgumentException("image " + filename + " not found");
     }
 	 */
+	
+	
+	/**
+	 * Draws the specified image centered at (<em>x</em>, <em>y</em>).
+	 * The supported image formats are JPEG, PNG, and GIF.
+	 * As an optimization, the picture is cached, so there is no performance
+	 * penalty for redrawing the same image multiple times (e.g., in an animation).
+	 * However, if you change the picture file after drawing it, subsequent
+	 * calls will draw the original picture.
+	 *
+	 * @param  x the center <em>x</em>-coordinate of the image
+	 * @param  y the center <em>y</em>-coordinate of the image
+	 * @param  filename the name of the image/picture, e.g., "ball.gif"
+	 * @throws IllegalArgumentException if the image filename is invalid
+	 */
+
+	
 		
 	/**
 	 * Draws the specified image centered at (<em>x</em>, <em>y</em>).
