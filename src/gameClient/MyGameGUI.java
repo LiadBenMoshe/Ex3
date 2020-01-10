@@ -2,7 +2,11 @@ package gameClient;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Image;
 import java.util.Iterator;
+
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 import Server.game_service;
 import utils.Range;
@@ -24,25 +28,38 @@ public class MyGameGUI {
 	}
 
 	private void init() {
-		StdDraw.setCanvasSize(700, 800);
+		StdDraw.setCanvasSize(1000, 800);
 		draw();
 		StdDraw.Visible();
 	}
+	
 	
 	/**
 	 * Open windo that adjusted scale bound by the nodes
 	 * drawing the Graph by draw points using iterator on each nodes location including key
 	 * and draw lines to the edges including direction and weight
 	 * 
-	 * @param type - 1 if there is an Additions drawing for Algoritem (shortestPath/TSP)
-	 * @param src_dest is an Arraylist - the list of nodes to draw the result of the algoritem
 	 */
-	protected void draw() {
+	private void draw() {
 		StdDraw.clear();
 		Range x = this.getGraph().GraphScaleX();
 		Range y = this.getGraph().GraphScaleY();
-		StdDraw.setXscale(x.get_min() - 1, x.get_max() + 1);
-		StdDraw.setYscale(y.get_min() - 1, y.get_max() + 1);
+		System.out.println((x.get_max()+x.get_min())/2);
+		System.out.println((y.get_max()+y.get_min())/2);
+		//StdDraw.picture(0,0, "http://www.moogaz.co.il/FunnyPictures/12.jpg", 50, 50);
+		StdDraw.picture((x.get_max()+x.get_min())/2,(y.get_max()+y.get_min())/2, "http://www.moogaz.co.il/FunnyPictures/12.jpg");
+		System.out.println(x);
+		System.out.println(y);
+		double x_fracMin = x.get_min() - (int)x.get_min();
+		double x_fracMax = x.get_max() - (int)x.get_max();
+		double y_fracMin = y.get_min() - (int)y.get_min();
+		double y_fracMax = y.get_max() - (int)y.get_max();
+		System.out.println(x_fracMin);
+		System.out.println(x_fracMax);
+		System.out.println(y_fracMin);
+		System.out.println(y_fracMax);
+		StdDraw.setXscale(x.get_min() - x.get_min()*0.00001, x.get_max() + x.get_min()*0.00001);
+		StdDraw.setYscale(y.get_min()  - y.get_min()*0.00001, y.get_max() + y.get_min()*0.00001);
 
 		// directions compute;
 		double directionX = 0;

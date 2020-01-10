@@ -73,11 +73,9 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
+
 import javax.swing.KeyStroke;
 
-import dataStructure.nodeData;
-import gui.Menu;
 
 /**
  *  The {@code StdDraw} class provides a basic capability for
@@ -709,8 +707,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		frame.setContentPane(draw);
 		frame.addKeyListener(std);    // JLabel cannot get keyboard focus
 		frame.setResizable(false);
-		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);            // closes all windows
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);      // closes only current window
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);            // closes all windows
+		//frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);      // closes only current window
 		frame.setTitle("GUI Graph");
 		frame.setJMenuBar(createMenuBar());
 		frame.pack();
@@ -1340,6 +1338,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         throw new IllegalArgumentException("image " + filename + " not found");
     }
 	 */
+		
 	/**
 	 * Draws the specified image centered at (<em>x</em>, <em>y</em>).
 	 * The supported image formats are JPEG, PNG, and GIF.

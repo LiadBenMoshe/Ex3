@@ -5,11 +5,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import utils.Point3D;
 import utils.Range;
 
 public class DGraph implements graph, Serializable {
-	
-	
+
+
 	/**
 	 * init DGraph with hashmap <Integer, node_data> represent as <node.key,node>
 	 *  and fill it from a given graph
@@ -24,23 +29,48 @@ public class DGraph implements graph, Serializable {
 			this.get_graph().put(current.getKey(), current);
 		}
 		set_mc(0);
+		set_number_key(-1);
 	}
 
 	//init Dgraph with hashmap <Integer, node_data> represent as <node.key,node>
 	public DGraph() {
 		set_graph(new HashMap<Integer, node_data>());
 		set_mc(0);
+		set_number_key(-1);
 	}
-	
+
 	/**
-	 * init new graph for string
-	 * @param g
+	 * init new graph from string
+	 * @param g - string with json format
 	 */
 	public void init(String g) {
-		
-		
+		String pos;
+		String split[];
+		Point3D p;
+		int src, dest;
+		double weight;
+		try {
+			JSONObject obj = new JSONObject(g);
+			JSONArray nodes = obj.getJSONArray("Nodes");
+			for (int i = 0; i < nodes.length(); i++) {
+				pos = (String) nodes.getJSONObject(i).get("pos");
+				split = pos.split(",");
+				p = new Point3D(Double.parseDouble(split[0]), Double.parseDouble(split[1]));
+				this.addNode(new nodeData(p));
+			}
+			
+			JSONArray edges = obj.getJSONArray("Edges");
+			for (int i = 0; i < edges.length(); i++) {
+				src =  (int) edges.getJSONObject(i).get("src");
+				dest = (int) edges.getJSONObject(i).get("dest");
+				weight = (double) edges.getJSONObject(i).get("w");
+				this.connect(src, dest, weight);
+			}
+
+		} catch (JSONException e) {e.printStackTrace();}
+
 	}
-	
+
 
 	/**
 	 * @return node_data
@@ -133,9 +163,9 @@ public class DGraph implements graph, Serializable {
 		}
 		return this.get_graph().values();
 	}
-	
 
-	
+
+
 	/**
 	 * check if node is valid in the hashmap else throw Exception
 	 *@return given node inner hashmap values aka his edges the from him to any dest
@@ -180,7 +210,7 @@ public class DGraph implements graph, Serializable {
 		}
 		// delete this node with all his edges as src
 		this.set_mc(this.getMC()+1);
-		
+
 		return this.get_graph().remove(key);
 	}
 
@@ -210,7 +240,7 @@ public class DGraph implements graph, Serializable {
 			return src_node.get_edges().remove(dest);
 		}
 	}
-	
+
 	/** 
 	 * return the number of nodes.
 	 * @return size
@@ -219,7 +249,7 @@ public class DGraph implements graph, Serializable {
 	public int nodeSize() {
 		return this.get_graph().size();
 	}
-	
+
 	/** 
 	 * return the number of edges (assume directional graph).
 	 * @return size
@@ -240,7 +270,7 @@ public class DGraph implements graph, Serializable {
 	 * @return mc
 	 */
 	@Override
-	  public int getMC() {
+	public int getMC() {
 		return _mc;
 	}
 	/**
@@ -264,7 +294,7 @@ public class DGraph implements graph, Serializable {
 		}
 		return new Range(minY, maxY);
 	}
-	
+
 	/**
 	 * iterate on all the nodes in the graph and return
 	 * the Max and min X value, check the scale
@@ -289,7 +319,7 @@ public class DGraph implements graph, Serializable {
 	public int get_number_key() {
 		return _number_key;
 	}
-	
+
 	public HashMap<Integer, node_data> get_graph() {
 		return _graph;
 	}
