@@ -35,12 +35,12 @@ public class SimpleGameClient {
 	}
 
 	public static void test1() {
-		int scenario_num = 20;
+		int scenario_num = 17;
 		game_service game = Game_Server.getServer(scenario_num); // you have [0,23] games
 		String g = game.getGraph();
 		DGraph gg = new DGraph();
 		gg.init(g);
-		System.out.println(gg.getNode(0).getLocation());
+		// System.out.println(gg.getNode(0).getLocation());
 		MyGameGUI f = new MyGameGUI(game, gg);
 		String info = game.toString();
 		System.out.println(g);
@@ -62,15 +62,22 @@ public class SimpleGameClient {
 			for (int a = 0; a < rs; a++) {
 				game.addRobot(src_node + a);
 			}
+
+			Iterator<String> r_iter = game.getRobots().iterator();
+			while (r_iter.hasNext()) {
+				System.out.println(r_iter.next());
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+
 		/*
 		 * game.startGame(); // should be a Thread!!! moveRobots(game, gg);
 		 * 
 		 * while(game.isRunning()) { moveRobots(game, gg); }
 		 * 
 		 * String results = game.toString(); System.out.println("Game Over: "+results);
+		 * 
 		 */
 	}
 

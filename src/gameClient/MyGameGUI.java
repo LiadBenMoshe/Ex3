@@ -3,10 +3,19 @@ package gameClient;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import Server.game_service;
 import utils.Range;
@@ -14,13 +23,17 @@ import utils.StdDraw;
 import dataStructure.DGraph;
 import dataStructure.edgeData;
 import dataStructure.edge_data;
+import dataStructure.graph;
 import dataStructure.nodeData;
 import dataStructure.node_data;
+import oop_dataStructure.oop_edge_data;
+import oop_dataStructure.oop_graph;
 
-public class MyGameGUI {
+public class MyGameGUI implements Runnable {
 	private game_service _game;
 	private DGraph _graph;
-	
+	private ArrayList<Robots> rob_list;
+
 	public MyGameGUI(game_service game, DGraph g){
 		setGame(game);
 		setGraph(g);
@@ -29,37 +42,117 @@ public class MyGameGUI {
 
 	private void init() {
 		StdDraw.setCanvasSize(1000, 800);
+		StdDraw.enableDoubleBuffering();
+		Robots();
 		draw();
+		drawRobots();
+		StdDraw.show();
 		StdDraw.Visible();
+		run();
 	}
-	
-	
+
+
+	/**
+	 * Moves each of the robots along the edge, in case the robot is on a node the
+	 * next destination (next edge) is chosen (randomly).
+	 * 
+	 * @param game
+	 * @param gg
+	 * @param log
+	 */
+	private void moveRobots(game_service game, DGraph gg) {
+		List<String> log = game.move();
+		if (log != null) {
+			long t = game.timeToEnd();
+			for (int i = 0; i < log.size(); i++) {
+				Robots r = this.getRobList().get(i);
+				r.init(log.get(i));
+			
+				this.draw();
+				this.drawRobots();
+				StdDraw.show();
+				StdDraw.pause(50);
+				
+				
+
+				if (r.getDest() == -1) {
+					r.setDest(nextNode(gg, r.getSrc()));
+					game.chooseNextEdge(r.getId(), r.getDest());
+				}
+			}
+		}
+	}
+
+	/**
+	 * a very simple random walk implementation!
+	 * 
+	 * @param g
+	 * @param src
+	 * @return
+	 */
+	private int nextNode(DGraph g, int src) {
+		int ans = -1;
+		Collection<edge_data> ee = g.getE(src);
+		Iterator<edge_data> itr = ee.iterator();
+		int s = ee.size();
+		int r = (int) (Math.random() * s);
+		int i = 0;
+		while (i < r) {
+			itr.next();
+			i++;
+		}
+		ans = itr.next().getDest();
+		return ans;
+	}
+
+
+
+	/**
+	 * thread that start the game
+	 */
+	public void run() {
+		this.getGame().startGame(); // should be a Thread!!! moveRobots(game, gg);
+
+		while(this.getGame().isRunning()) {
+			moveRobots(this.getGame(), this.getGraph()); 
+		}
+
+
+
+
+	}
+	/**
+	 * drawRobots
+	 */
+	public void drawRobots() {
+		//draw Robots
+		Iterator<Robots> r_iter = this.getRobList().iterator();
+		while(r_iter.hasNext()) {
+			Robots r = r_iter.next();
+			StdDraw.setPenColor(Color.MAGENTA);
+			StdDraw.setPenRadius(0.05);
+			//StdDraw.rectangle(r.getPosX(), r.getPosY(), 10, 20);
+			StdDraw.point(r.getPosX(), r.getPosY());
+		}
+
+	}
+
+
 	/**
 	 * Open windo that adjusted scale bound by the nodes
 	 * drawing the Graph by draw points using iterator on each nodes location including key
 	 * and draw lines to the edges including direction and weight
 	 * 
 	 */
-	private void draw() {
+	public void draw() {
 		StdDraw.clear();
 		Range x = this.getGraph().GraphScaleX();
 		Range y = this.getGraph().GraphScaleY();
-		System.out.println((x.get_max()+x.get_min())/2);
-		System.out.println((y.get_max()+y.get_min())/2);
+
 		//StdDraw.picture(0,0, "http://www.moogaz.co.il/FunnyPictures/12.jpg", 50, 50);
-		StdDraw.picture((x.get_max()+x.get_min())/2,(y.get_max()+y.get_min())/2, "http://www.moogaz.co.il/FunnyPictures/12.jpg");
-		System.out.println(x);
-		System.out.println(y);
-		double x_fracMin = x.get_min() - (int)x.get_min();
-		double x_fracMax = x.get_max() - (int)x.get_max();
-		double y_fracMin = y.get_min() - (int)y.get_min();
-		double y_fracMax = y.get_max() - (int)y.get_max();
-		System.out.println(x_fracMin);
-		System.out.println(x_fracMax);
-		System.out.println(y_fracMin);
-		System.out.println(y_fracMax);
+
 		StdDraw.setXscale(x.get_min() - x.get_min()*0.00001, x.get_max() + x.get_min()*0.00001);
-		StdDraw.setYscale(y.get_min()  - y.get_min()*0.00001, y.get_max() + y.get_min()*0.00001);
+		StdDraw.setYscale(y.get_min() - y.get_min()*0.00001, y.get_max() + y.get_min()*0.00001);
 
 		// directions compute;
 		double directionX = 0;
@@ -88,7 +181,7 @@ public class MyGameGUI {
 				StdDraw.line(current.getLocation().x(), current.getLocation().y(),
 						current_edge.getNodeDest().getLocation().x(),
 						current_edge.getNodeDest().getLocation().y());
-				
+
 				// draw direction
 				StdDraw.setPenColor(Color.CYAN);
 				StdDraw.setPenRadius(0.025);
@@ -113,6 +206,32 @@ public class MyGameGUI {
 		}
 	}
 
+	/**
+	 * get number of robots
+	 */
+	private void Robots() {
+		JSONObject GameJson;
+		try {
+			GameJson = new JSONObject(this.getGame().toString()).getJSONObject("GameServer");
+			int Robot_num = GameJson.getInt("robots"); 
+			setRobList(new ArrayList<Robots>(Robot_num));			
+			int src_node = 0; // arbitrary node, you should start at one of the fruits
+			for (int a = 0; a < Robot_num; a++) {
+				this.getGame().addRobot(src_node + a);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		// adding robots
+		Iterator<String> iter = this.getGame().getRobots().iterator();
+		while (iter.hasNext()) {
+			this.getRobList().add(new Robots(iter.next()));
+		}
+
+
+	}
+
 	public DGraph getGraph() {
 		return _graph;
 	}
@@ -127,5 +246,13 @@ public class MyGameGUI {
 
 	public void setGame(game_service _game) {
 		this._game = _game;
+	}
+
+	public ArrayList<Robots> getRobList() {
+		return rob_list;
+	}
+
+	public void setRobList(ArrayList<Robots> rob_list) {
+		this.rob_list = rob_list;
 	}
 }
