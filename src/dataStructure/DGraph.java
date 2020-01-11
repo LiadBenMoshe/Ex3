@@ -30,46 +30,49 @@ public class DGraph implements graph, Serializable {
 		}
 		set_mc(0);
 	}
-	public void init(String json) {
-		try {
-
-			
-			String locate;
-			String point[];
-			JSONObject js=new JSONObject(json);
-			JSONArray arrnode=js.getJSONArray("Nodes");
-			for (int i = 0; i < arrnode.length(); i++) {
-				locate = (String) arrnode.getJSONObject(i).get("pos");
-				point = locate.split(",");
-				nodeData n=new nodeData(new Point3D(Double.parseDouble(point[0]), Double.parseDouble(point[1])));
-				this.addNode(n);
-				
-			}
-			int src,dest;
-			double w;
-			JSONArray edges = js.getJSONArray("Edges");
-			for (int i = 0; i < edges.length(); i++) {
-				src =  (int) edges.getJSONObject(i).get("src");
-				dest = (int) edges.getJSONObject(i).get("dest");
-				w = (double) edges.getJSONObject(i).get("w");
-				this.connect(src,dest,w);
-			}
-			
 
 
-
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
 
 	//init Dgraph with hashmap <Integer, node_data> represent as <node.key,node>
 	public DGraph() {
 		set_graph(new HashMap<Integer, node_data>());
 		set_mc(0);
+		set_number_key(-1);
 	}
+
+	/**
+	 * init new graph from string
+	 * @param g - string with json format
+	 */
+	public void init(String g) {
+		String pos;
+		String split[];
+		Point3D p;
+		int src, dest;
+		double weight;
+		try {
+			JSONObject obj = new JSONObject(g);
+			JSONArray nodes = obj.getJSONArray("Nodes");
+			for (int i = 0; i < nodes.length(); i++) {
+				pos = (String) nodes.getJSONObject(i).get("pos");
+				split = pos.split(",");
+				p = new Point3D(Double.parseDouble(split[0]), Double.parseDouble(split[1]));
+				this.addNode(new nodeData(p));
+			}
+			
+			JSONArray edges = obj.getJSONArray("Edges");
+			for (int i = 0; i < edges.length(); i++) {
+				src =  (int) edges.getJSONObject(i).get("src");
+				dest = (int) edges.getJSONObject(i).get("dest");
+				weight = (double) edges.getJSONObject(i).get("w");
+				this.connect(src, dest, weight);
+			}
+
+		} catch (JSONException e) {e.printStackTrace();}
+
+	}
+
+
 
 	/**
 	 * @return node_data
@@ -118,12 +121,11 @@ public class DGraph implements graph, Serializable {
 		if(n == null) {
 			throw new RuntimeException("Input is null");
 		}
-		
+
+		set_number_key(this.get_number_key() + 1);
 		((nodeData) n).setKey(this.get_number_key());
-		
 		this.get_graph().put(this.get_number_key(),(nodeData) n);
 		this.set_mc(this.getMC()+1);
-		set_number_key(this.get_number_key() + 1);
 	}
 
 	/**
@@ -341,4 +343,5 @@ public class DGraph implements graph, Serializable {
 	private int _number_key;
 	private int _mc;
 	private HashMap<Integer, node_data> _graph;
+
 }

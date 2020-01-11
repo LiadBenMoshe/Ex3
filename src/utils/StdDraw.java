@@ -1,4 +1,4 @@
-package gameClient;
+package utils;
 
 //package stdDraw;
 // https://introcs.cs.princeton.edu/java/stdlib/StdDraw.java.html
@@ -29,6 +29,7 @@ package gameClient;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -37,6 +38,11 @@ import java.awt.MediaTracker;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -55,7 +61,7 @@ import java.io.IOException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Iterator;
+
 import java.util.LinkedList;
 import java.util.TreeSet;
 import java.util.NoSuchElementException;
@@ -67,13 +73,8 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
 
-import dataStructure.DGraph;
-import dataStructure.edgeData;
-import dataStructure.edge_data;
-import dataStructure.nodeData;
-import dataStructure.node_data;
+import javax.swing.KeyStroke;
 
 
 /**
@@ -479,7 +480,7 @@ import dataStructure.node_data;
  *  @author Robert Sedgewick
  *  @author Kevin Wayne
  */
-public final class StdDraw implements KeyListener {
+public final class StdDraw implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
 
 	/**
 	 *  The color black.
@@ -605,7 +606,7 @@ public final class StdDraw implements KeyListener {
 	private static Object keyLock = new Object();
 
 	// default font
-	private static final Font DEFAULT_FONT = new Font("SansSerif", Font.CENTER_BASELINE,19);
+	private static final Font DEFAULT_FONT = new Font("SansSerif", Font.PLAIN, 16);
 
 	// current font
 	private static Font font;
@@ -621,7 +622,11 @@ public final class StdDraw implements KeyListener {
 	private static JFrame frame;
 
 
+
 	// mouse state
+	private static boolean isMousePressed = false;
+	private static double mouseX = 0;
+	private static double mouseY = 0;
 
 	// queue of typed key characters
 	private static LinkedList<Character> keysTyped = new LinkedList<Character>();
@@ -630,7 +635,8 @@ public final class StdDraw implements KeyListener {
 	private static TreeSet<Integer> keysDown = new TreeSet<Integer>();
 
 	// singleton pattern: client can't instantiate
-	private StdDraw() { }
+	private StdDraw() {
+	}
 
 
 	// static initializer
@@ -645,8 +651,9 @@ public final class StdDraw implements KeyListener {
 	 * Ordinarly, this method is called once, at the very beginning
 	 * of a program.
 	 */
+	
 	public static void setCanvasSize() {
-		setCanvasSize(DEFAULT_SIZE, DEFAULT_SIZE,null);
+		setCanvasSize(DEFAULT_SIZE, DEFAULT_SIZE);
 	}
 
 	/**
@@ -661,75 +668,13 @@ public final class StdDraw implements KeyListener {
 	 * @throws IllegalArgumentException unless both {@code canvasWidth} and
 	 *         {@code canvasHeight} are positive
 	 */
-	public static void setCanvasSize(int canvasWidth, int canvasHeight,DGraph p) {
-		
+	public static void setCanvasSize(int canvasWidth, int canvasHeight) {
 		if (canvasWidth <= 0 || canvasHeight <= 0)
 			throw new IllegalArgumentException("width and height must be positive");
 		width = canvasWidth;
 		height = canvasHeight;
-		drawgraph(p);
-
-
+		init();
 	}
-	public static void drawgraph(DGraph p) {
-		StdDraw.setXscale(p.GraphScaleX().get_min(),p.GraphScaleX().get_max());
-		StdDraw.setYscale(p.GraphScaleY().get_min(),p.GraphScaleY().get_max());
-		
-		double directionX = 0;
-		double directionY = 0;
-		double middleX = 0;
-		double middleY = 0;
-		// draw points
-		Iterator<node_data> iter =p.getV().iterator();
-		Iterator<edge_data> iter_edge;
-		while (iter.hasNext()) {
-			nodeData current = (nodeData) iter.next();
-			iter_edge = current.get_edges().values().iterator();
-			// draw edges
-			while (iter_edge.hasNext()) {
-				StdDraw.setPenColor(Color.BLACK);
-				StdDraw.setPenRadius(0.007);
-				edgeData current_edge = (edgeData) iter_edge.next();
-
-
-				// calculations
-				directionX = current.getLocation().x()*0.1 + current_edge.getNodeDest().getLocation().x()*0.9;
-				directionY = current.getLocation().y()*0.1 + current_edge.getNodeDest().getLocation().y()*0.9;
-
-
-				// draw edges
-				StdDraw.line(current.getLocation().x(), current.getLocation().y(),
-						current_edge.getNodeDest().getLocation().x(),
-						current_edge.getNodeDest().getLocation().y());
-				
-				
-
-				// draw direction
-				StdDraw.setPenColor(Color.CYAN);
-				StdDraw.setPenRadius(0.025);
-				StdDraw.point(directionX, directionY);
-				// edge weight 
-				middleX = (current.getLocation().x() + current_edge.getNodeDest().getLocation().x()) / 2;
-				middleY = (current.getLocation().y() + current_edge.getNodeDest().getLocation().y()) / 2;
-				StdDraw.setPenColor(new Color(0, 153, 0));
-				StdDraw.setFont(new Font("Arial", Font.PLAIN, 20));
-				StdDraw.text(middleX, middleY + 0.2, String.valueOf(current_edge.getWeight()));
-
-			}
-			// draw point
-			StdDraw.setPenColor(Color.BLUE);
-			StdDraw.setPenRadius(0.03);
-			StdDraw.point(current.getLocation().x(), current.getLocation().y());
-
-			// node key
-			StdDraw.setPenColor(Color.BLACK);
-			StdDraw.setFont(new Font("Arial", Font.PLAIN, 20));
-			StdDraw.text(current.getLocation().x(), current.getLocation().y() + 0.25, String.valueOf(current.getKey()));
-		}
-		
-
-	}
-
 
 	// init
 	private static void init() {
@@ -758,38 +703,35 @@ public final class StdDraw implements KeyListener {
 		ImageIcon icon = new ImageIcon(onscreenImage);
 		JLabel draw = new JLabel(icon);
 
-
+		draw.addMouseListener(std);
+		draw.addMouseMotionListener(std);
 
 		frame.setContentPane(draw);
 		frame.addKeyListener(std);    // JLabel cannot get keyboard focus
 		frame.setResizable(false);
-		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);            // closes all windows
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);      // closes only current window
-		frame.setTitle("Standard Draw");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);            // closes all windows
+		//frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);      // closes only current window
+		frame.setTitle("GUI Graph");
 		frame.setJMenuBar(createMenuBar());
 		frame.pack();
 		frame.requestFocusInWindow();
-		frame.setVisible(true);
+		frame.setVisible(false);
+	}
+	
+	public static void Visible() {
+		if(frame != null) frame.setVisible(true);
 	}
 
 	// create the menu bar (changed to private)
 	private static JMenuBar createMenuBar() {
 		JMenuBar menuBar = new JMenuBar();
-		JMenu menu = new JMenu("menu");
-		JMenu menu1 = new JMenu("add");
-		JMenu menu2 = new JMenu("options");
+		JMenu menu = new JMenu("File");
 		menuBar.add(menu);
-		menuBar.add(menu1);
-		menuBar.add(menu2);
 		JMenuItem menuItem1 = new JMenuItem(" Save...   ");
-
+		menuItem1.addActionListener(std);
 		menuItem1.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
 				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		menu.add(menuItem1);
-		JMenuItem menuItem2 = new JMenuItem("load graph...   ");
-
-		menu.add(menuItem2);
-
 		return menuBar;
 	}
 
@@ -1398,6 +1340,24 @@ public final class StdDraw implements KeyListener {
         throw new IllegalArgumentException("image " + filename + " not found");
     }
 	 */
+	
+	
+	/**
+	 * Draws the specified image centered at (<em>x</em>, <em>y</em>).
+	 * The supported image formats are JPEG, PNG, and GIF.
+	 * As an optimization, the picture is cached, so there is no performance
+	 * penalty for redrawing the same image multiple times (e.g., in an animation).
+	 * However, if you change the picture file after drawing it, subsequent
+	 * calls will draw the original picture.
+	 *
+	 * @param  x the center <em>x</em>-coordinate of the image
+	 * @param  y the center <em>y</em>-coordinate of the image
+	 * @param  filename the name of the image/picture, e.g., "ball.gif"
+	 * @throws IllegalArgumentException if the image filename is invalid
+	 */
+
+	
+		
 	/**
 	 * Draws the specified image centered at (<em>x</em>, <em>y</em>).
 	 * The supported image formats are JPEG, PNG, and GIF.
@@ -1717,7 +1677,169 @@ public final class StdDraw implements KeyListener {
 	}
 
 
+	/**
+	 * This method cannot be called directly.
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		FileDialog chooser = new FileDialog(StdDraw.frame, "Use a .png or .jpg extension", FileDialog.SAVE);
+		chooser.setVisible(true);
+		String filename = chooser.getFile();
+		if (filename != null) {
+			StdDraw.save(chooser.getDirectory() + File.separator + chooser.getFile());
+		}
 
+	}
+
+
+	/***************************************************************************
+	 *  Mouse interactions.
+	 ***************************************************************************/
+
+	/**
+	 * Returns true if the mouse is being pressed.
+	 *
+	 * @return {@code true} if the mouse is being pressed; {@code false} otherwise
+	 */
+	public static boolean isMousePressed() {
+		synchronized (mouseLock) {
+			return isMousePressed;
+		}
+	}
+
+	/**
+	 * Returns true if the mouse is being pressed.
+	 *
+	 * @return {@code true} if the mouse is being pressed; {@code false} otherwise
+	 * @deprecated replaced by {@link #isMousePressed()}
+	 */
+	@Deprecated
+	public static boolean mousePressed() {
+		synchronized (mouseLock) {
+			return isMousePressed;
+		}
+	}
+
+	/**
+	 * Returns the <em>x</em>-coordinate of the mouse.
+	 *
+	 * @return the <em>x</em>-coordinate of the mouse
+	 */
+	public static double mouseX() {
+		synchronized (mouseLock) {
+			return mouseX;
+		}
+	}
+
+	/**
+	 * Returns the <em>y</em>-coordinate of the mouse.
+	 *
+	 * @return <em>y</em>-coordinate of the mouse
+	 */
+	public static double mouseY() {
+		synchronized (mouseLock) {
+			return mouseY;
+		}
+	}
+
+
+	/**
+	 * This method cannot be called directly.
+	 */
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// this body is intentionally left empty
+	}
+
+	/**
+	 * This method cannot be called directly.
+	 */
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// this body is intentionally left empty
+	}
+
+	/**
+	 * This method cannot be called directly.
+	 */
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// this body is intentionally left empty
+	}
+
+	/**
+	 * This method cannot be called directly.
+	 */
+	@Override
+	public void mousePressed(MouseEvent e) {
+		synchronized (mouseLock) {
+			mouseX = StdDraw.userX(e.getX());
+			mouseY = StdDraw.userY(e.getY());
+			isMousePressed = true;
+		}
+	}
+
+	/**
+	 * This method cannot be called directly.
+	 */
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		synchronized (mouseLock) {
+			isMousePressed = false;
+		}
+	}
+
+	/**
+	 * This method cannot be called directly.
+	 */
+	@Override
+	public void mouseDragged(MouseEvent e)  {
+		synchronized (mouseLock) {
+			mouseX = StdDraw.userX(e.getX());
+			mouseY = StdDraw.userY(e.getY());
+		}
+	}
+
+	/**
+	 * This method cannot be called directly.
+	 */
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		synchronized (mouseLock) {
+			mouseX = StdDraw.userX(e.getX());
+			mouseY = StdDraw.userY(e.getY());
+		}
+	}
+
+
+	/***************************************************************************
+	 *  Keyboard interactions.
+	 ***************************************************************************/
+
+	/**
+	 * Returns true if the user has typed a key (that has not yet been processed).
+	 *
+	 * @return {@code true} if the user has typed a key (that has not yet been processed
+	 *         by {@link #nextKeyTyped()}; {@code false} otherwise
+	 */
+	public static boolean hasNextKeyTyped() {
+		synchronized (keyLock) {
+			return !keysTyped.isEmpty();
+		}
+	}
+
+	/**
+	 * Returns the next key that was typed by the user (that your program has not already processed).
+	 * This method should be preceded by a call to {@link #hasNextKeyTyped()} to ensure
+	 * that there is a next key to process.
+	 * This method returns a Unicode character corresponding to the key
+	 * typed (such as {@code 'a'} or {@code 'A'}).
+	 * It cannot identify action keys (such as F1 and arrow keys)
+	 * or modifier keys (such as control).
+	 *
+	 * @return the next key typed by the user (that your program has not already processed).
+	 * @throws NoSuchElementException if there is no remaining key
+	 */
 	public static char nextKeyTyped() {
 		synchronized (keyLock) {
 			if (keysTyped.isEmpty()) {
