@@ -46,8 +46,8 @@ public class MyGameGUI implements Runnable {
 		Robots();
 		Fruits();
 		draw();
-		drawRobots();
 		drawFruits();
+
 		//StdDraw.background((int)(this.get_x().get_max()+this.get_x().get_min())/2,(int) (this.get_y().get_max()+this.get_y().get_min())/2,"data\\A0.png");
 		StdDraw.show();
 		StdDraw.Visible();
