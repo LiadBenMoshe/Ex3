@@ -45,6 +45,9 @@ public class SimpleGameClient {
 		String info = game.toString();
 		System.out.println(g);
 		System.out.println(info);
+		System.out.println(game.getFruits());
+		System.out.println(game.getRobots());
+		System.out.println("**********************");
 
 		JSONObject line;
 		try {
