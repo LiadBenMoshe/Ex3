@@ -13,10 +13,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import Server.Game_Server;
 import Server.game_service;
 import utils.Range;
 import utils.StdDraw;
@@ -32,28 +34,43 @@ import oop_dataStructure.oop_graph;
 public class MyGameGUI implements Runnable {
 
 
-	public MyGameGUI(game_service game, DGraph g){
+	public MyGameGUI(){
+		game_service game = Game_Server.getServer(StdDraw.dialogScenario()); // you have [0,23] games
+		DGraph graph = new DGraph();
+		graph.init(game.getGraph());
 		setGame(game);
-		setGraph(g);
+		setGraph(graph);
 		init();
 	}
 
+	/**
+	 * icons from https://www.flaticon.com/
+	 */
 	private void init() {
 		StdDraw.setCanvasSize(1000, 800);
-		StdDraw.enableDoubleBuffering();
 		set_x(this.getGraph().GraphScaleX());
 		set_y(this.getGraph().GraphScaleY());
-		Robots();
 		Fruits();
 		draw();
+		StdDraw.Visible();
+		StdDraw.enableDoubleBuffering();
+		RobotsStartPosition();
 		drawFruits();
 		drawRobots();
-		//StdDraw.background((int)(this.get_x().get_max()+this.get_x().get_min())/2,(int) (this.get_y().get_max()+this.get_y().get_min())/2,"data\\A0.png");
 		StdDraw.show();
-		StdDraw.Visible();
 		run();
 	}
 
+	
+	/**
+	 * user move Robots action
+	 */
+	private void moveRobotsGUI() {
+		
+	}
+	
+	
+	
 
 	/**
 	 * Moves each of the robots along the edge, in case the robot is on a node the
@@ -69,22 +86,20 @@ public class MyGameGUI implements Runnable {
 		for(int i = 0; i < fruits.size(); i++) {
 			this.getFruitList().get(i).init(fruits.get(i));
 		}
-		
+
 		List<String> log = this.getGame().move();
 		if (log != null) {
-			long t = this.getGame().timeToEnd();
 			for (int i = 0; i < log.size(); i++) {
 				Robots r = this.getRobList().get(i);
 				r.init(log.get(i));
-				
+
 				this.draw();
 				this.drawRobots();
 				this.drawFruits();
 				StdDraw.show();
 				//StdDraw.pause(50);
 				
-
-
+				
 
 				if (r.getDest() == -1) {
 					r.setDest(nextNode(this.getGraph(), r.getSrc()));
@@ -128,9 +143,9 @@ public class MyGameGUI implements Runnable {
 			moveRobots(); 
 		}
 
-
-
-
+		// game finished print results
+		String results = this.getGame().toString(); 
+		JOptionPane.showMessageDialog(null, "Game Over: "+results);
 	}
 	/**
 	 * drawRobots
@@ -141,7 +156,7 @@ public class MyGameGUI implements Runnable {
 		while(r_iter.hasNext()) {
 			Robots r = r_iter.next();
 			StdDraw.picture(r.getPosX(),r.getPosY(), "data\\p"+r.getId()+".png");
-			
+
 		}
 
 	}
@@ -156,12 +171,11 @@ public class MyGameGUI implements Runnable {
 			Fruits f = f_iter.next();
 			if(f.getType() == 1) {
 				StdDraw.picture(f.getPosX(),f.getPosY(), "data\\apple.png");
-				
+
 			}
+			// type -1
 			else {
 				StdDraw.picture(f.getPosX(),f.getPosY(), "data\\banana.png");
-			
-
 			}
 		}
 
@@ -232,7 +246,7 @@ public class MyGameGUI implements Runnable {
 			StdDraw.setPenColor(Color.BLACK);
 			StdDraw.setFont(new Font("Arial", Font.PLAIN, 20));
 			StdDraw.text(current.getLocation().x(), current.getLocation().y() + 0.0001, String.valueOf(current.getKey()));
-			
+
 			// draw timer
 			StdDraw.text(this.get_x().get_max() - 0.002, this.get_y().get_min(), "Time: "+this.getGame().timeToEnd());
 		}
@@ -241,15 +255,14 @@ public class MyGameGUI implements Runnable {
 	/**
 	 * get number of robots
 	 */
-	private void Robots() {
+	private void RobotsStartPosition() {
 		JSONObject GameJson;
 		try {
 			GameJson = new JSONObject(this.getGame().toString()).getJSONObject("GameServer");
 			int Robot_num = GameJson.getInt("robots"); 
 			setRobList(new ArrayList<Robots>(Robot_num));			
-			int src_node = 0; // arbitrary node, you should start at one of the fruits
 			for (int a = 0; a < Robot_num; a++) {
-				this.getGame().addRobot(src_node + a);
+				this.getGame().addRobot(StdDraw.dialogRobots(a, this.getGraph().nodeSize()));
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

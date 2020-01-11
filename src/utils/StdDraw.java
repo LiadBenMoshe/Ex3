@@ -61,20 +61,23 @@ import java.io.IOException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.TreeSet;
 import java.util.NoSuchElementException;
 import javax.imageio.ImageIO;
 
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+
+import dataStructure.node_data;
 
 
 /**
@@ -716,10 +719,49 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		frame.requestFocusInWindow();
 		frame.setVisible(false);
 	}
+
+	/****** Our porject The maze of waze changes******/
+	public static int dialogScenario(){
+		try {
+			String input = JOptionPane.showInputDialog(frame,"Please Enter Scenario number from [0,23]\n"
+					+ "for any input mistake game will load as Scenario number 0");
+			if(input == null)
+				return 0;
+
+			return Integer.parseInt(input);
+
+		}catch(Exception err) {
+				return 0;
+			}
+		}
 	
+	public static int dialogRobots(int id, int size){
+		try {
+			JOptionPane dialog = new JOptionPane();
+			dialog.setSize(240, 180);
+			//dialog.setVisible(true);
+			int s = size - 1;
+			String input = dialog.showInputDialog(frame,"Please Enter node number to robot '"+id+"' start location\n"
+					+ "nodes can be from 0 - "+s+" "
+					+ "for any input mistake will set his on id as start node");
+			int node_num = Integer.parseInt(input);
+			if(input == null || node_num < 0 || node_num > s)
+				return id;
+			
+			return node_num;
+
+		}catch(Exception err) {
+				return id;
+			}
+		}
+
+
 	public static void Visible() {
 		if(frame != null) frame.setVisible(true);
 	}
+	/****** the waze of maze *********/
+
+
 
 	// create the menu bar (changed to private)
 	private static JMenuBar createMenuBar() {
@@ -1339,8 +1381,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         throw new IllegalArgumentException("image " + filename + " not found");
     }
 	 */
-	
-	
+
+
 	/**
 	 * Draws the specified image centered at (<em>x</em>, <em>y</em>).
 	 * The supported image formats are JPEG, PNG, and GIF.
@@ -1355,8 +1397,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	 * @throws IllegalArgumentException if the image filename is invalid
 	 */
 
-	
-		
+
+
 	/**
 	 * Draws the specified image centered at (<em>x</em>, <em>y</em>).
 	 * The supported image formats are JPEG, PNG, and GIF.
@@ -1687,7 +1729,6 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		if (filename != null) {
 			StdDraw.save(chooser.getDirectory() + File.separator + chooser.getFile());
 		}
-
 	}
 
 

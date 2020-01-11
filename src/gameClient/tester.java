@@ -13,7 +13,7 @@ public class tester {
 		String g = game.getGraph();
 		DGraph gg = new DGraph();
 		gg.init(g);
-		MyGameGUI f = new MyGameGUI(game, gg);
+		MyGameGUI f = new MyGameGUI();
 	}
 
 }
