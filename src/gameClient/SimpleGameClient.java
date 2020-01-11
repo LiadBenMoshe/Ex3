@@ -1,5 +1,6 @@
 package gameClient;
 
+import java.awt.Color;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +10,8 @@ import org.json.JSONObject;
 
 import Server.Game_Server;
 import Server.game_service;
+import dataStructure.DGraph;
+import dataStructure.edge_data;
 import oop_dataStructure.OOP_DGraph;
 import oop_dataStructure.oop_edge_data;
 import oop_dataStructure.oop_graph;
@@ -31,13 +34,19 @@ import oop_dataStructure.oop_graph;
  */
 public class SimpleGameClient {
 	public static void main(String[] a) {
+		
 		test1();}
 	public static void test1() {
-		int scenario_num = 2;
+		int scenario_num = 4;
 		game_service game = Game_Server.getServer(scenario_num); // you have [0,23] games
 		String g = game.getGraph();
-		OOP_DGraph gg = new OOP_DGraph();
+		DGraph gg = new DGraph();
+		System.out.println(g);
 		gg.init(g);
+		System.out.println(gg.getNode(8).getLocation().x());
+		System.out.println(gg.getNode(8).getLocation().y());
+		
+		StdDraw.setCanvasSize(500,500,gg);
 		String info = game.toString();
 		JSONObject line;
 		try {
@@ -70,7 +79,7 @@ public class SimpleGameClient {
 	 * @param gg
 	 * @param log
 	 */
-	private static void moveRobots(game_service game, oop_graph gg) {
+	private static void moveRobots(game_service game, DGraph gg) {
 		List<String> log = game.move();
 		if(log!=null) {
 			long t = game.timeToEnd();
@@ -100,10 +109,10 @@ public class SimpleGameClient {
 	 * @param src
 	 * @return
 	 */
-	private static int nextNode(oop_graph g, int src) {
+	private static int nextNode(DGraph g, int src) {
 		int ans = -1;
-		Collection<oop_edge_data> ee = g.getE(src);
-		Iterator<oop_edge_data> itr = ee.iterator();
+		Collection<edge_data> ee = g.getE(src);
+		Iterator<edge_data> itr = ee.iterator();
 		int s = ee.size();
 		int r = (int)(Math.random()*s);
 		int i=0;
