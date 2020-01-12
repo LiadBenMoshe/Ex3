@@ -149,17 +149,16 @@ public class MyGameGUI implements Runnable {
 	private int nextNode(DGraph g, int src) {
 		int fixDest=-1;
 		double check;
-
 		double x=StdDraw.xClick();
 		double y=StdDraw.yClick();
 		Iterator<edge_data> iter=((nodeData) getGraph().get_graphAlgo().getNode(src)).get_edges().values().iterator();
 		edgeData ed=(edgeData) iter.next();
 		while(iter.hasNext()) {
 			check=ed.getNodeDest().getLocation().x()+ed.getNodeDest().getLocation().y();
-			if((x+y)-check<0.0006) {
-				fixDest=ed.getDest();
+			if(Math.abs((x+y)-check)<0.00006) {
+				return fixDest=ed.getDest();
 			}
-			iter.next();
+			ed=(edgeData) iter.next();
 		}
 		return fixDest; 
 	}
@@ -251,12 +250,6 @@ public class MyGameGUI implements Runnable {
 
 			e.printStackTrace();
 		}
-
-
-
-
-
-
 
 		// directions compute;
 		double directionX = 0;
