@@ -29,6 +29,8 @@ import oop_dataStructure.oop_graph;
  *
  */
 public class SimpleGameClient {
+	
+	
 	public static void main(String[] a) {
 		test1();
 
@@ -73,6 +75,7 @@ public class SimpleGameClient {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+		
 
 		
 		  game.startGame(); // should be a Thread!!! moveRobots(game, gg);
