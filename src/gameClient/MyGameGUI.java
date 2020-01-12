@@ -15,7 +15,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,8 +31,6 @@ import dataStructure.edge_data;
 import dataStructure.graph;
 import dataStructure.nodeData;
 import dataStructure.node_data;
-import oop_dataStructure.oop_edge_data;
-import oop_dataStructure.oop_graph;
 
 public class MyGameGUI implements Runnable {
 
@@ -44,9 +41,9 @@ public class MyGameGUI implements Runnable {
 		DGraph graph = new DGraph();
 		graph.init(game.getGraph());
 		Graph_Algo graphAlgo = new Graph_Algo(graph);
-		
-		setGame(game);
 		setGraph(graphAlgo);
+		setGame(game);
+		setAuto(new ashAutomatic(graphAlgo));
 		init();
 	}
 
@@ -58,10 +55,11 @@ public class MyGameGUI implements Runnable {
 		set_x(this.getGraph().get_graphAlgo().GraphScaleX());
 		set_y(this.getGraph().get_graphAlgo().GraphScaleY());
 		Fruits();
-		draw();
+		drawGraph();
 		StdDraw.Visible();
 		StdDraw.enableDoubleBuffering();
 		RobotsStartPosition();
+		//RobotsAutoPosition();
 		drawFruits();
 
 		drawRobots();
@@ -86,7 +84,7 @@ public class MyGameGUI implements Runnable {
 				Robots r = this.getRobList().get(i);
 				r.init(log.get(i));
 
-				this.draw();
+				this.drawGraph();
 				this.drawRobots();
 				this.drawFruits();
 				StdDraw.show();
@@ -124,10 +122,12 @@ public class MyGameGUI implements Runnable {
 				Robots r = this.getRobList().get(i);
 				r.init(log.get(i));
 
-				this.draw();
+				this.drawGraph();
 				this.drawRobots();
 				this.drawFruits();
 				StdDraw.show();
+				//StdDraw.pause(50);
+
 
 
 
@@ -173,9 +173,14 @@ public class MyGameGUI implements Runnable {
 		this.getGame().startGame(); // should be a Thread!!! moveRobots(game, gg);
 
 		while(this.getGame().isRunning()) {
-			moveRobots(); 
-		}
+			moveRobots();
 
+			try {
+				Thread.sleep(0);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
 		// game finished print results
 		String results = this.getGame().toString(); 
 		JOptionPane.showMessageDialog(null, "Game Over: "+results);
@@ -184,7 +189,7 @@ public class MyGameGUI implements Runnable {
 	 * drawRobots
 	 */
 	public void drawRobots() {
-		//draw Robots
+		//drawGraph Robots
 		Iterator<Robots> r_iter = this.getRobList().iterator();
 		while(r_iter.hasNext()) {
 			Robots r = r_iter.next();
@@ -198,7 +203,7 @@ public class MyGameGUI implements Runnable {
 	 * drawFruits
 	 */
 	public void drawFruits() {
-		//draw Robots
+		//drawGraph Robots
 		Iterator<Fruits> f_iter = this.getFruitList().iterator();
 		while(f_iter.hasNext()) {
 			Fruits f = f_iter.next();
@@ -217,11 +222,11 @@ public class MyGameGUI implements Runnable {
 
 	/**
 	 * Open windo that adjusted scale bound by the nodes
-	 * drawing the Graph by draw points using iterator on each nodes location including key
-	 * and draw lines to the edges including direction and weight
+	 * drawing the Graph by drawGraph points using iterator on each nodes location including key
+	 * and drawGraph lines to the edges including direction and weight
 	 * 
 	 */
-	public void draw() {
+	public void drawGraph() {
 		StdDraw.clear();
 		Range x = this.get_x();
 		Range y = this.get_y();
@@ -238,6 +243,7 @@ public class MyGameGUI implements Runnable {
 			String backpicture = obj.getJSONObject("GameServer").getString("graph");
 			double AverageX = ((this.get_x().get_max() + this.get_x().get_min())/2)*0.00001;
 			double AverageY = ((this.get_y().get_max() + this.get_y().get_min())/2)*0.00001;
+
 
 
 			StdDraw.picture(this.get_x().get_max() - 0.0083, this.get_y().get_min()+0.0031, "data\\map.png",0.05,0.01);
@@ -257,16 +263,18 @@ public class MyGameGUI implements Runnable {
 		double directionY = 0;
 		double middleX = 0;
 		double middleY = 0;
+
 		// draw points
 		Iterator<node_data> iter = this.getGraph().get_graphAlgo().getV().iterator();
+
 		Iterator<edge_data> iter_edge;
 		while (iter.hasNext()) {
 			nodeData current = (nodeData) iter.next();
 			iter_edge = current.get_edges().values().iterator();
-			// draw edges
+			// drawGraph edges
 			while (iter_edge.hasNext()) {
 				StdDraw.setPenColor(Color.BLACK);
-				StdDraw.setPenRadius(0.007);
+				StdDraw.setPenRadius(0.005);
 				edgeData current_edge = (edgeData) iter_edge.next();
 
 
@@ -275,26 +283,29 @@ public class MyGameGUI implements Runnable {
 				directionY = current.getLocation().y()*0.1 + current_edge.getNodeDest().getLocation().y()*0.9;
 
 
-				// draw edges
+				// drawGraph edges
 				StdDraw.line(current.getLocation().x(), current.getLocation().y(),
 						current_edge.getNodeDest().getLocation().x(),
 						current_edge.getNodeDest().getLocation().y());
 
-				// draw direction
+				// drawGraph direction
 				StdDraw.setPenColor(Color.CYAN);
-				StdDraw.setPenRadius(0.025);
+				StdDraw.setPenRadius(0.015);
 				StdDraw.point(directionX, directionY);
 				// edge weight 
-				middleX = (current.getLocation().x() + current_edge.getNodeDest().getLocation().x()) / 2;
-				middleY = (current.getLocation().y() + current_edge.getNodeDest().getLocation().y()) / 2;
-				StdDraw.setPenColor(new Color(0, 153, 0));
-				StdDraw.setFont(new Font("Arial", Font.PLAIN, 20));
-				StdDraw.text(middleX, middleY + 0.2, String.valueOf(current_edge.getWeight()));
+				/*
+				 * middleX = (current.getLocation().x() +
+				 * current_edge.getNodeDest().getLocation().x()) / 2; middleY =
+				 * (current.getLocation().y() + current_edge.getNodeDest().getLocation().y()) /
+				 * 2; StdDraw.setPenColor(new Color(0, 153, 0)); StdDraw.setFont(new
+				 * Font("Arial", Font.PLAIN, 20)); StdDraw.text(middleX, middleY + 0.0001,
+				 * String.valueOf(current_edge.getWeight()));
+				 */
 
 			}
-			// draw point
+			// drawGraph point
 			StdDraw.setPenColor(Color.BLUE);
-			StdDraw.setPenRadius(0.03);
+			StdDraw.setPenRadius(0.02);
 			StdDraw.point(current.getLocation().x(), current.getLocation().y());
 
 			// node key
@@ -302,7 +313,7 @@ public class MyGameGUI implements Runnable {
 			StdDraw.setFont(new Font("Arial", Font.PLAIN, 20));
 			StdDraw.text(current.getLocation().x(), current.getLocation().y() + 0.0001, String.valueOf(current.getKey()));
 
-			// draw timer
+			// drawGraph timer
 			StdDraw.text(this.get_x().get_max() - 0.002, this.get_y().get_min(), "Time: "+this.getGame().timeToEnd());
 
 		}
@@ -330,6 +341,37 @@ public class MyGameGUI implements Runnable {
 			this.getRobList().add(new Robots(iter.next()));
 		}
 	}
+
+	private void RobotsAutoPosition() {
+		JSONObject GameJson;
+		try {
+			GameJson = new JSONObject(this.getGame().toString()).getJSONObject("GameServer");
+			int Robot_num = GameJson.getInt("robots"); 
+			int startNode = 0;
+			// if less fruit then robots
+			setRobList(new ArrayList<Robots>(Robot_num));			
+			for (int i = 0; i < Robot_num; i++) {
+				startNode = this.getAuto().nearestNode(this.getFruitList().get(i));
+				if(startNode == -1) {
+					this.getGame().addRobot(i);
+				}
+				else {
+					this.getGame().addRobot(startNode);
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		// adding robots
+		Iterator<String> iter = this.getGame().getRobots().iterator();
+		while (iter.hasNext()) {
+			String s = iter.next();
+			System.out.println(s);
+			this.getRobList().add(new Robots(s));
+		}
+	}
+
 
 	private void Fruits() {
 		// adding fruits
@@ -385,8 +427,18 @@ public class MyGameGUI implements Runnable {
 	public void set_y(Range _y) {
 		this._y = _y;
 	}
+
+	public ashAutomatic getAuto() {
+		return _driver;
+	}
+
+	public void setAuto(ashAutomatic _auto) {
+		this._driver = _auto;
+	}
 	/**** data *****/
-	
+
+	private ashAutomatic _driver;
+
 	private Range _x, _y;
 	private game_service _game;
 	private Graph_Algo _graph;
