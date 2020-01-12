@@ -21,10 +21,12 @@ import org.json.JSONObject;
 
 import Server.Game_Server;
 import Server.game_service;
+import algorithms.Graph_Algo;
 import utils.Point3D;
 import utils.Range;
 import utils.StdDraw;
 import dataStructure.DGraph;
+
 import dataStructure.edgeData;
 import dataStructure.edge_data;
 import dataStructure.graph;
@@ -38,10 +40,13 @@ public class MyGameGUI implements Runnable {
 
 	public MyGameGUI(){
 		game_service game = Game_Server.getServer(StdDraw.dialogScenario()); // you have [0,23] games
+		
 		DGraph graph = new DGraph();
 		graph.init(game.getGraph());
+		Graph_Algo graphAlgo = new Graph_Algo(graph);
+		
 		setGame(game);
-		setGraph(graph);
+		setGraph(graphAlgo);
 		init();
 	}
 
@@ -50,8 +55,8 @@ public class MyGameGUI implements Runnable {
 	 */
 	private void init() {
 		StdDraw.setCanvasSize(1050, 600);
-		set_x(this.getGraph().GraphScaleX());
-		set_y(this.getGraph().GraphScaleY());
+		set_x(this.getGraph().get_graphAlgo().GraphScaleX());
+		set_y(this.getGraph().get_graphAlgo().GraphScaleY());
 		Fruits();
 		draw();
 		StdDraw.Visible();
@@ -61,6 +66,7 @@ public class MyGameGUI implements Runnable {
 
 		drawRobots();
 		StdDraw.show();
+
 		run();
 	}
 
@@ -69,22 +75,6 @@ public class MyGameGUI implements Runnable {
 	 * user move Robots action
 	 */
 	private void moveRobotsGUI() {
-
-	}
-
-
-
-
-	/**
-	 * Moves each of the robots along the edge, in case the robot is on a node the
-	 * next destination (next edge) is chosen (randomly).
-	 * 
-	 * @param game
-	 * @param gg
-	 * @param log
-	 */
-	private void moveRobots() {
-		// update fruits
 		List<String> fruits = this.getGame().getFruits();
 		for(int i = 0; i < fruits.size(); i++) {
 			this.getFruitList().get(i).init(fruits.get(i));
@@ -100,12 +90,49 @@ public class MyGameGUI implements Runnable {
 				this.drawRobots();
 				this.drawFruits();
 				StdDraw.show();
-				//StdDraw.pause(700);
+
+
+			}
+		}
+
+	}
+
+
+
+
+	/**
+	 * Moves each of the robots along the edge, in case the robot is on a node the
+	 * next destination (next edge) is chosen (randomly).
+	 * 
+	 * @param game
+	 * @param gg
+	 * @param log
+	 */
+	private void moveRobots() {
+
+
+
+		//update fruit
+		List<String> fruits = this.getGame().getFruits();
+		for(int i = 0; i < fruits.size(); i++) {
+			this.getFruitList().get(i).init(fruits.get(i));
+		}
+
+		List<String> log = this.getGame().move();
+		if (log != null) {
+			for (int i = 0; i < log.size(); i++) {
+				Robots r = this.getRobList().get(i);
+				r.init(log.get(i));
+
+				this.draw();
+				this.drawRobots();
+				this.drawFruits();
+				StdDraw.show();
 
 
 
 				if (r.getDest() == -1) {
-					r.setDest(nextNode(this.getGraph(), r.getSrc()));
+					r.setDest(nextNode(this.getGraph().get_graphAlgo(), r.getSrc()));
 					this.getGame().chooseNextEdge(r.getId(), r.getDest());
 				}
 			}
@@ -120,18 +147,21 @@ public class MyGameGUI implements Runnable {
 	 * @return
 	 */
 	private int nextNode(DGraph g, int src) {
-		int ans = -1;
-		Collection<edge_data> ee = g.getE(src);
-		Iterator<edge_data> itr = ee.iterator();
-		int s = ee.size();
-		int r = (int) (Math.random() * s);
-		int i = 0;
-		while (i < r) {
-			itr.next();
-			i++;
+		int fixDest=-1;
+		double check;
+
+		double x=StdDraw.xClick();
+		double y=StdDraw.yClick();
+		Iterator<edge_data> iter=((nodeData) getGraph().get_graphAlgo().getNode(src)).get_edges().values().iterator();
+		edgeData ed=(edgeData) iter.next();
+		while(iter.hasNext()) {
+			check=ed.getNodeDest().getLocation().x()+ed.getNodeDest().getLocation().y();
+			if((x+y)-check<0.0006) {
+				fixDest=ed.getDest();
+			}
+			iter.next();
 		}
-		ans = itr.next().getDest();
-		return ans;
+		return fixDest; 
 	}
 
 
@@ -208,7 +238,7 @@ public class MyGameGUI implements Runnable {
 			String backpicture = obj.getJSONObject("GameServer").getString("graph");
 			double AverageX = ((this.get_x().get_max() + this.get_x().get_min())/2)*0.00001;
 			double AverageY = ((this.get_y().get_max() + this.get_y().get_min())/2)*0.00001;
-			System.out.println(backpicture.substring(5));
+
 
 			StdDraw.picture(this.get_x().get_max() - 0.0083, this.get_y().get_min()+0.0031, "data\\map.png",0.05,0.01);
 		} catch (JSONException e) {
@@ -228,7 +258,7 @@ public class MyGameGUI implements Runnable {
 		double middleX = 0;
 		double middleY = 0;
 		// draw points
-		Iterator<node_data> iter = this.getGraph().getV().iterator();
+		Iterator<node_data> iter = this.getGraph().get_graphAlgo().getV().iterator();
 		Iterator<edge_data> iter_edge;
 		while (iter.hasNext()) {
 			nodeData current = (nodeData) iter.next();
@@ -288,7 +318,7 @@ public class MyGameGUI implements Runnable {
 			int Robot_num = GameJson.getInt("robots"); 
 			setRobList(new ArrayList<Robots>(Robot_num));			
 			for (int a = 0; a < Robot_num; a++) {
-				this.getGame().addRobot(StdDraw.dialogRobots(a, this.getGraph().nodeSize()));
+				this.getGame().addRobot(StdDraw.dialogRobots(a, this.getGraph().get_graphAlgo().nodeSize()));
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -310,11 +340,11 @@ public class MyGameGUI implements Runnable {
 		}
 	}
 
-	public DGraph getGraph() {
+	public Graph_Algo getGraph() {
 		return _graph;
 	}
 
-	public void setGraph(DGraph _graph) {
+	public void setGraph(Graph_Algo _graph) {
 		this._graph = _graph;
 	}
 
@@ -356,9 +386,10 @@ public class MyGameGUI implements Runnable {
 		this._y = _y;
 	}
 	/**** data *****/
+	
 	private Range _x, _y;
 	private game_service _game;
-	private DGraph _graph;
+	private Graph_Algo _graph;
 	private ArrayList<Robots> _rob_list;
 	private ArrayList<Fruits> _fruit_list;
 }

@@ -753,6 +753,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 				return id;
 			}
 		}
+	
 
 
 	public static void Visible() {
@@ -1780,6 +1781,19 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 			return mouseY;
 		}
 	}
+	private static double xClick;
+	private static double yClick;
+	
+	public static double yClick() {
+		synchronized (mouseLock) {
+			return yClick;
+		}
+	}
+	public static double xClick() {
+		synchronized (mouseLock) {
+			return xClick;
+		}
+	}
 
 
 	/**
@@ -1787,7 +1801,11 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// this body is intentionally left empty
+		xClick =mouseX;
+		yClick=mouseY;
+		System.out.println(xClick);
+		System.out.println(yClick);
+		
 	}
 
 	/**
