@@ -115,6 +115,7 @@ public class SimpleGameClient {
 					int dest = ttt.getInt("dest");
 
 					if (dest == -1) {
+						
 						dest = nextNode(gg, src);
 						game.chooseNextEdge(rid, dest);
 						System.out.println("Turn to node: " + dest + "  time to end:" + (t / 1000));

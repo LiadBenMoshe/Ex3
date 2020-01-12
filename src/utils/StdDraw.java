@@ -728,17 +728,21 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 			if(input == null)
 				return 0;
 
-			return Integer.parseInt(input);
+			int level = Integer.parseInt(input);
+			if(level < 0 || level > 23)
+				return 0;
+
+			return level;
 
 		}catch(Exception err) {
-				return 0;
-			}
+			return 0;
 		}
+	}
 	
+
 	public static int dialogRobots(int id, int size){
 		try {
-			
-			
+
 			int s = size - 1;
 			String input = JOptionPane.showInputDialog(frame,"Please Enter node number to robot '"+id+"' start location\n"
 					+ "nodes can be from 0 - "+s+" "
@@ -746,14 +750,13 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 			int node_num = Integer.parseInt(input);
 			if(input == null || node_num < 0 || node_num > s)
 				return id;
-			
+
 			return node_num;
 
 		}catch(Exception err) {
-				return id;
-			}
+			return id;
 		}
-	
+	}
 
 
 	public static void Visible() {
@@ -1781,19 +1784,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 			return mouseY;
 		}
 	}
-	private static double xClick;
-	private static double yClick;
-	
-	public static double yClick() {
-		synchronized (mouseLock) {
-			return yClick;
-		}
-	}
-	public static double xClick() {
-		synchronized (mouseLock) {
-			return xClick;
-		}
-	}
+
 
 
 	/**
@@ -1801,11 +1792,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		xClick =mouseX;
-		yClick=mouseY;
-		System.out.println(xClick);
-		System.out.println(yClick);
-		
+
+
 	}
 
 	/**
@@ -1924,6 +1912,15 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 			return keysDown.contains(keycode);
 		}
 	}
+	private static int player=0;
+	public static int getPlayer() {
+		return player;
+	}
+	public static void setPlayer(int n) {
+		player=n;
+	}
+	
+	
 
 
 	/**

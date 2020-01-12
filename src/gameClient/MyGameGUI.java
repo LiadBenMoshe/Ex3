@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,7 +39,7 @@ public class MyGameGUI implements Runnable {
 
 	public MyGameGUI(){
 		game_service game = Game_Server.getServer(StdDraw.dialogScenario()); // you have [0,23] games
-		
+
 		DGraph graph = new DGraph();
 		graph.init(game.getGraph());
 		Graph_Algo graphAlgo = new Graph_Algo(graph);
@@ -72,31 +74,16 @@ public class MyGameGUI implements Runnable {
 	/**
 	 * user move Robots action
 	 */
-	private void moveRobotsGUI() {
-		List<String> fruits = this.getGame().getFruits();
-		for(int i = 0; i < fruits.size(); i++) {
-			this.getFruitList().get(i).init(fruits.get(i));
-		}
-
-		List<String> log = this.getGame().move();
-		if (log != null) {
-			for (int i = 0; i < log.size(); i++) {
-				Robots r = this.getRobList().get(i);
-				r.init(log.get(i));
-
-				this.drawGraph();
-				this.drawRobots();
-				this.drawFruits();
-				StdDraw.show();
+	
 
 
-			}
-		}
-
+	private void repaint(){
+		this.drawGraph();
+		this.drawRobots();
+		this.drawFruits();
+		StdDraw.show();
+		//StdDraw.pause(50);
 	}
-
-
-
 
 	/**
 	 * Moves each of the robots along the edge, in case the robot is on a node the
@@ -106,34 +93,36 @@ public class MyGameGUI implements Runnable {
 	 * @param gg
 	 * @param log
 	 */
-	private void moveRobots() {
+	private void moveRobotsGUI() {
 
 
-
+		
+		char c='0';
 		//update fruit
 		List<String> fruits = this.getGame().getFruits();
 		for(int i = 0; i < fruits.size(); i++) {
 			this.getFruitList().get(i).init(fruits.get(i));
 		}
 
+
 		List<String> log = this.getGame().move();
 		if (log != null) {
 			for (int i = 0; i < log.size(); i++) {
 				Robots r = this.getRobList().get(i);
 				r.init(log.get(i));
+				//System.out.println(log.get(i));
 
-				this.drawGraph();
-				this.drawRobots();
-				this.drawFruits();
-				StdDraw.show();
-				//StdDraw.pause(50);
-
-
+				for(int j=0;j<this.getRobList().size();j++) {
+					c=(char) (j+'0');
+					if(StdDraw.isKeyPressed(c))
+						StdDraw.setPlayer(j);
+				}
 
 
 				if (r.getDest() == -1) {
-					r.setDest(nextNode(this.getGraph().get_graphAlgo(), r.getSrc()));
-					this.getGame().chooseNextEdge(r.getId(), r.getDest());
+					this.getGame().chooseNextEdge(StdDraw.getPlayer(), nextNodeGUI(r.getSrc()));
+
+
 				}
 			}
 		}
@@ -146,21 +135,29 @@ public class MyGameGUI implements Runnable {
 	 * @param src
 	 * @return
 	 */
-	private int nextNode(DGraph g, int src) {
-		int fixDest=-1;
-		double check;
-		double x=StdDraw.xClick();
-		double y=StdDraw.yClick();
-		Iterator<edge_data> iter=((nodeData) getGraph().get_graphAlgo().getNode(src)).get_edges().values().iterator();
-		edgeData ed=(edgeData) iter.next();
-		while(iter.hasNext()) {
-			check=ed.getNodeDest().getLocation().x()+ed.getNodeDest().getLocation().y();
-			if(Math.abs((x+y)-check)<0.00006) {
-				return fixDest=ed.getDest();
-			}
-			ed=(edgeData) iter.next();
+
+	private int nextNodeGUI(int src) {
+		int nextDest = -1;
+		double x = 0, y = 0;
+
+
+
+		if(StdDraw.isMousePressed()) {
+			x = StdDraw.mouseX();
+			y = StdDraw.mouseY();
 		}
-		return fixDest; 
+		Point3D p = new Point3D(x, y);
+		Iterator<edge_data> iter = this.getGraph().get_graphAlgo().getE(src).iterator();
+		edgeData edge;
+		while(iter.hasNext()) {
+			edge = (edgeData) iter.next();
+			double check = p.distance2D(edge.getNodeDest().getLocation());
+			if(check <= 0.0005) {
+				return edge.getDest();
+			}
+
+		}
+		return nextDest;
 	}
 
 
@@ -172,10 +169,10 @@ public class MyGameGUI implements Runnable {
 		this.getGame().startGame(); // should be a Thread!!! moveRobots(game, gg);
 
 		while(this.getGame().isRunning()) {
-			moveRobots();
-
+			moveRobotsGUI();
 			try {
-				Thread.sleep(0);
+				/* Thread.sleep(0); */
+				repaint();
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -188,6 +185,7 @@ public class MyGameGUI implements Runnable {
 	 * drawRobots
 	 */
 	public void drawRobots() {
+		
 		//drawGraph Robots
 		Iterator<Robots> r_iter = this.getRobList().iterator();
 		while(r_iter.hasNext()) {
@@ -195,6 +193,10 @@ public class MyGameGUI implements Runnable {
 			StdDraw.picture(r.getPosX(),r.getPosY(), "data\\p"+r.getId()+".png");
 
 		}
+		
+		StdDraw.setPenColor(Color.black);
+		StdDraw.setPenRadius(0.06);
+		StdDraw.text(get_x().get_min()+0.007,get_y().get_max(),"for pickacho:0 for balbazor:1 for squirtel:2 for carmander:3 for snorlax:4");
 
 	}
 
