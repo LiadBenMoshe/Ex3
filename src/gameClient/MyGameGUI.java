@@ -96,7 +96,13 @@ public class MyGameGUI implements Runnable {
 	}
 
 
-
+	private void repaint(){
+		this.drawGraph();
+		this.drawRobots();
+		this.drawFruits();
+		StdDraw.show();
+		//StdDraw.pause(50);
+	}
 
 	/**
 	 * Moves each of the robots along the edge, in case the robot is on a node the
@@ -107,8 +113,6 @@ public class MyGameGUI implements Runnable {
 	 * @param log
 	 */
 	private void moveRobots() {
-
-
 
 		//update fruit
 		List<String> fruits = this.getGame().getFruits();
@@ -121,19 +125,10 @@ public class MyGameGUI implements Runnable {
 			for (int i = 0; i < log.size(); i++) {
 				Robots r = this.getRobList().get(i);
 				r.init(log.get(i));
-
-				this.drawGraph();
-				this.drawRobots();
-				this.drawFruits();
-				StdDraw.show();
-				//StdDraw.pause(50);
-
-
-
-
+				//System.out.println(log.get(i));
+				
 				if (r.getDest() == -1) {
-					r.setDest(nextNode(this.getGraph().get_graphAlgo(), r.getSrc()));
-					this.getGame().chooseNextEdge(r.getId(), r.getDest());
+					this.getGame().chooseNextEdge(r.getId(), nextNode(r.getSrc()));
 				}
 			}
 		}
@@ -146,22 +141,24 @@ public class MyGameGUI implements Runnable {
 	 * @param src
 	 * @return
 	 */
-	private int nextNode(DGraph g, int src) {
-		int fixDest=-1;
-		double check;
-
-		double x=StdDraw.xClick();
-		double y=StdDraw.yClick();
-		Iterator<edge_data> iter=((nodeData) getGraph().get_graphAlgo().getNode(src)).get_edges().values().iterator();
-		edgeData ed=(edgeData) iter.next();
-		while(iter.hasNext()) {
-			check=ed.getNodeDest().getLocation().x()+ed.getNodeDest().getLocation().y();
-			if((x+y)-check<0.0006) {
-				fixDest=ed.getDest();
-			}
-			iter.next();
+	private int nextNode(int src) {
+		int nextDest = -1;
+		double x = 0, y = 0;
+		if(StdDraw.isMousePressed()) {
+				x = StdDraw.mouseX();
+				y = StdDraw.mouseY();
 		}
-		return fixDest; 
+		Point3D p = new Point3D(x, y);
+		Iterator<edge_data> iter = this.getGraph().get_graphAlgo().getE(src).iterator();
+		edgeData edge;
+		while(iter.hasNext()) {
+			edge = (edgeData) iter.next();
+			double check = p.distance2D(edge.getNodeDest().getLocation());
+			if(check <= 0.0005) {
+				return edge.getDest();
+			}
+		}
+		return nextDest;
 	}
 
 
@@ -174,9 +171,9 @@ public class MyGameGUI implements Runnable {
 
 		while(this.getGame().isRunning()) {
 			moveRobots();
-
 			try {
-				Thread.sleep(0);
+				/* Thread.sleep(0); */
+				repaint();
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
