@@ -77,10 +77,10 @@ public class SimpleGameClient {
 		
 		  game.startGame(); // should be a Thread!!! moveRobots(game, gg);
 		//  moveRobots(game, gg);
-		// while(game.isRunning()) { moveRobots(game, gg); }
+		/* while(game.isRunning()) { moveRobots(game, gg); }
 		  
 		  String results = game.toString(); System.out.println("Game Over: "+results);
-		 
+		 */
 		 
 	}
 
@@ -117,6 +117,7 @@ public class SimpleGameClient {
 						System.out.println("Turn to node: " + dest + "  time to end:" + (t / 1000));
 						System.out.println(ttt);
 					}
+					
 					System.out.println(game.getRobots().get(0).toString());
 				} catch (JSONException e) {
 					e.printStackTrace();
