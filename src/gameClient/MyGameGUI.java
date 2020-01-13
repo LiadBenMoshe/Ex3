@@ -13,8 +13,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,7 +60,7 @@ public class MyGameGUI implements Runnable {
 		drawGraph();
 		StdDraw.Visible();
 		StdDraw.enableDoubleBuffering();
-		// RobotsStartPosition();
+		 RobotsStartPosition();
 		RobotsAutoPosition();
 		drawFruits();
 
@@ -69,6 +71,7 @@ public class MyGameGUI implements Runnable {
 	}
 
 	private void repaint() {
+
 		this.drawGraph();
 		this.drawRobots();
 		this.drawFruits();
@@ -78,6 +81,7 @@ public class MyGameGUI implements Runnable {
 
 	private void moveRobotsAuto() {
 		// update fruit
+
 		List<String> fruits = this.getGame().getFruits();
 		for (int i = 0; i < fruits.size(); i++) {
 			this.getFruitList().get(i).init(fruits.get(i));
@@ -90,6 +94,7 @@ public class MyGameGUI implements Runnable {
 				r.init(log.get(i));
 		
 				//System.out.println(log.get(i));
+
 
 				//System.out.println(r.getDest());
 			//	System.out.println(r.getNextDest().isEmpty());
@@ -104,10 +109,12 @@ public class MyGameGUI implements Runnable {
 				else if(r.getDest() == -1) {
 					this.getGame().chooseNextEdge(i, r.getNextDest().get(0).getKey());
 					r.getNextDest().remove(0);
+
 				}
 			}
 		}
 	}
+
 
 	/**
 	 * a very simple random walk implementation!
@@ -150,6 +157,7 @@ public class MyGameGUI implements Runnable {
 		return (src + 6) % this.getGraph().get_graphAlgo().nodeSize();
 	}
 
+
 	/**
 	 * Moves each of the robots along the edge, in case the robot is on a node the
 	 * next destination (next edge) is chosen (randomly).
@@ -160,21 +168,34 @@ public class MyGameGUI implements Runnable {
 	 */
 	private void moveRobotsGUI() {
 
-		// update fruit
+		char c='0';
+		//update fruit
+
 		List<String> fruits = this.getGame().getFruits();
 		for (int i = 0; i < fruits.size(); i++) {
 			this.getFruitList().get(i).init(fruits.get(i));
 		}
+
 
 		List<String> log = this.getGame().move();
 		if (log != null) {
 			for (int i = 0; i < log.size(); i++) {
 				Robots r = this.getRobList().get(i);
 				r.init(log.get(i));
-				// System.out.println(log.get(i));
+
+				//System.out.println(log.get(i));
+
+				for(int j=0;j<this.getRobList().size();j++) {
+					c=(char) (j+'0');
+					if(StdDraw.isKeyPressed(c))
+						StdDraw.setPlayer(j);
+				}
+
 
 				if (r.getDest() == -1) {
-					this.getGame().chooseNextEdge(r.getId(), nextNodeGUI(r.getSrc()));
+					this.getGame().chooseNextEdge(StdDraw.getPlayer(), nextNodeGUI(r.getSrc()));
+
+
 				}
 			}
 		}
@@ -190,7 +211,10 @@ public class MyGameGUI implements Runnable {
 	private int nextNodeGUI(int src) {
 		int nextDest = -1;
 		double x = 0, y = 0;
-		if (StdDraw.isMousePressed()) {
+
+
+		if(StdDraw.isMousePressed()) {
+
 			x = StdDraw.mouseX();
 			y = StdDraw.mouseY();
 		}
@@ -203,6 +227,7 @@ public class MyGameGUI implements Runnable {
 			if (check <= 0.0005) {
 				return edge.getDest();
 			}
+
 		}
 		return nextDest;
 	}
@@ -213,13 +238,17 @@ public class MyGameGUI implements Runnable {
 	public void run() {
 		this.getGame().startGame(); // should be a Thread!!! moveRobots(game, gg);
 
-		while (this.getGame().isRunning()) {
+
+		while(this.getGame().isRunning()) {
+			//moveRobotsGUI();
 			moveRobotsAuto();
-			repaint();
-			/*
-			 * try { Thread.sleep(0); repaint(); } catch(Exception e) { e.printStackTrace();
-			 * }
-			 */
+			try {
+				/* Thread.sleep(0); */
+				repaint();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+
 		}
 		// game finished print results
 		String results = this.getGame().toString();
@@ -230,13 +259,19 @@ public class MyGameGUI implements Runnable {
 	 * drawRobots
 	 */
 	public void drawRobots() {
+
 		// drawGraph Robots
+
 		Iterator<Robots> r_iter = this.getRobList().iterator();
 		while (r_iter.hasNext()) {
 			Robots r = r_iter.next();
 			StdDraw.picture(r.getPosX(), r.getPosY(), "data\\p" + r.getId() + ".png");
 
 		}
+
+		StdDraw.setPenColor(Color.black);
+		StdDraw.setPenRadius(0.06);
+		StdDraw.text(get_x().get_min()+0.007,get_y().get_max(),"for pickacho:0 for balbazor:1 for squirtel:2 for carmander:3 for snorlax:4");
 
 	}
 
