@@ -33,6 +33,7 @@ public class Fruits {
 				setType(type);
 				setPosX(Double.parseDouble(split[0]));
 				setPosY(Double.parseDouble(split[1]));
+				//setIsTarget(false);
 				
 		} catch (JSONException e) {e.printStackTrace();}
 
@@ -65,7 +66,18 @@ public class Fruits {
 	}
 
 
+	public boolean isTarget() {
+		return _onTarget;
+	}
 
+
+
+	public void setIsTarget(boolean _onTarget) {
+		this._onTarget = _onTarget;
+	}
+
+
+	private boolean _onTarget;
 	private int _type;
 	private double _value, _posX, _posY;
 }

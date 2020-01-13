@@ -1,16 +1,20 @@
 package gameClient;
 
+import java.util.ArrayList;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import dataStructure.node_data;
+
 public class Robots {
-	
-	
+
+
 
 	public Robots(String r) {
 		init(r);
 	}
-	
+
 	/**
 	 * init new graph from string
 	 * @param g - string with json format
@@ -23,28 +27,28 @@ public class Robots {
 		try {
 			JSONObject obj = new JSONObject(r);
 			JSONObject robot_param = obj.getJSONObject("Robot");
-				id =  (int) robot_param.getInt("id");
-				value = (double) robot_param.getDouble("value");
-				src = (int) robot_param.getInt("src");
-				dest = (int) robot_param.getInt("dest");
-				speed = (double) robot_param.getDouble("speed");
-				pos = (String) robot_param.getString("pos");
-				split = pos.split(",");
-				
-				setId(id);
-				setValue(value);
-				setSrc(src);
-				setDest(dest);
-				setSpeed(speed);
-				setPosX(Double.parseDouble(split[0]));
-				setPosY(Double.parseDouble(split[1]));
-				
+			id =  (int) robot_param.getInt("id");
+			value = (double) robot_param.getDouble("value");
+			src = (int) robot_param.getInt("src");
+			dest = (int) robot_param.getInt("dest");
+			speed = (double) robot_param.getDouble("speed");
+			pos = (String) robot_param.getString("pos");
+			split = pos.split(",");
+
+			setId(id);
+			setValue(value);
+			setSrc(src);
+			setDest(dest);
+			setSpeed(speed);
+			setPosX(Double.parseDouble(split[0]));
+			setPosY(Double.parseDouble(split[1]));
+
 		} catch (JSONException e) {e.printStackTrace();}
 
 	}
-	
-	
-	
+
+
+
 	public int getId() {
 		return _id;
 	}
@@ -88,10 +92,28 @@ public class Robots {
 		this._speed = _speed;
 	}
 
+	public ArrayList<node_data> getNextDest() {
+		return _nextDest;
+	}
+
+	public void setNextDest(ArrayList<node_data> list) {
+		this._nextDest = list;
+	}
 
 
+	public Fruits getTarget() {
+		return _target;
+	}
+
+	public void setTarget(Fruits _target) {
+		this._target = _target;
+	}
+
+
+	private Fruits _target;
+	private ArrayList<node_data> _nextDest;
 	private int _id, _src, _dest;
 	private double _value, _posX, _posY;
 	private double _speed;
-	
+
 }
