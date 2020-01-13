@@ -18,8 +18,80 @@ import dataStructure.node_data;
 public class ashAutomatic {
 
 	public ashAutomatic(Graph_Algo g) {
-		this._graph = g;
+		this._graphAlgo = g;
 	}
+
+	
+	// need improve
+	public Fruits ClosestFruitbyShortestpath(ArrayList<Fruits> list, Robots r) {
+		if(list.isEmpty()) {
+			return null;
+		}
+		int[] closestNode = new int[2];
+		int[] FruitsNode = new int[2];
+		Fruits closest = list.get(0);
+		for(int i = 1 ; i < list.size(); i++) {
+			if(!(list.get(i).isTarget())) {
+				closestNode = nearestNode(closest);
+				FruitsNode = nearestNode(list.get(i));
+				if(closestNode[0] == r.getSrc()) {
+					closestNode[0] = closestNode[1];
+				}
+				if(FruitsNode[0] == r.getSrc()) {
+					FruitsNode[0] = FruitsNode[1];
+				}
+				if(this._graphAlgo.shortestPathDist(r.getSrc(), closestNode[0]) >
+				this._graphAlgo.shortestPathDist(r.getSrc(), FruitsNode[0])) {
+					closest = list.get(i);
+				}
+			}
+		}
+		return closest;
+	}
+
+	
+// need improvbe
+	public Fruits ClosestFruitbyDistance(ArrayList<Fruits> list, Robots r) {
+		if(list.isEmpty()) {
+			return null;
+		}
+		Fruits closest = list.get(0);
+		Point3D robPoint;
+		Point3D fruitPoint;
+		Point3D closestPoint;
+		for(int i = 1 ; i < list.size(); i++) {
+			if(!(list.get(i).isTarget())) {
+				robPoint = new Point3D(r.getPosX(), r.getPosY());
+				fruitPoint = new Point3D(list.get(i).getPosX(), list.get(i).getPosY());
+				closestPoint = new Point3D(closest.getPosX(), closest.getPosY());
+				if(closestPoint.distance2D(robPoint) > fruitPoint.distance2D(robPoint)) {
+					closest = list.get(i);
+				}
+			}
+		}
+		return closest;
+	}
+
+
+
+
+	public Fruits mostValue(ArrayList<Fruits> list) {
+		if(list.isEmpty()) {
+			return null;
+		}
+		Fruits f_highest = list.get(0);
+		for(int i = 1; i < list.size(); i++) {
+			if(list.get(i).isTarget() == false && f_highest.getValue() < list.get(i).getValue()) {
+				f_highest = list.get(i);
+			}
+		}
+		f_highest.setIsTarget(true);
+		return f_highest;
+	}
+
+
+
+
 
 	/**
 	 * find the nearest node to a given fruit
@@ -28,16 +100,20 @@ public class ashAutomatic {
 	 * @return
 	 */
 	public int[] nearestNode(Fruits f) {
+		if(f == null) {
+			return null;
+		}
+
 		Boolean flag = false;
 		ArrayList<node_data> nodes = new ArrayList<>();
 		ArrayList<edge_data> edges = new ArrayList<>();
-		nodes.addAll(this._graph.get_graphAlgo().getV());
+		nodes.addAll(this._graphAlgo.get_Dgraph().getV());
 		nodeData src, dest;
 		edgeData edge;
 		int[] ans = new int[2];
 		for (int i = 0; i < nodes.size(); i++) {
 			src = (nodeData) nodes.get(i);
-			edges.addAll(this._graph.get_graphAlgo().getE(i));
+			edges.addAll(this._graphAlgo.get_Dgraph().getE(i));
 
 			for (int j = 0; j < edges.size(); j++) {
 				edge = (edgeData) ((edges).get(j));
@@ -116,21 +192,21 @@ public class ashAutomatic {
 	 * } } } }
 	 * 
 	 *//**
-		 * a very simple random walk implementation!
-		 * 
-		 * @param g
-		 * @param src
-		 * @return
-		 *//*
-			 * private int nextNode(int src) { int ans = -1; Collection<edge_data> ee =
-			 * this._graph.get_graphAlgo().getE(src); Iterator<edge_data> itr =
-			 * ee.iterator(); int s = ee.size(); int r = (int) (Math.random() * s); int i =
-			 * 0; while (i < r) { itr.next(); i++; } ans = itr.next().getDest(); return ans;
-			 * }
-			 */
+	 * a very simple random walk implementation!
+	 * 
+	 * @param g
+	 * @param src
+	 * @return
+	 *//*
+	 * private int nextNode(int src) { int ans = -1; Collection<edge_data> ee =
+	 * this._graph.get_graphAlgo().getE(src); Iterator<edge_data> itr =
+	 * ee.iterator(); int s = ee.size(); int r = (int) (Math.random() * s); int i =
+	 * 0; while (i < r) { itr.next(); i++; } ans = itr.next().getDest(); return ans;
+	 * }
+	 */
 
 	/*** private data ****/
 	private game_service _game;
-	private Graph_Algo _graph;
+	private Graph_Algo _graphAlgo;
 	private final double eps = 0.000001;
 }

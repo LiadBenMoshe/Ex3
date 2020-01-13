@@ -21,18 +21,18 @@ import dataStructure.node_data;
 public class Graph_Algo implements graph_algorithms, Serializable {
 
 	public Graph_Algo() {
-		set_graphAlgo(new DGraph());
+		set_Dgraph(new DGraph());
 	}
 
 	public Graph_Algo(graph _graph) {
-		set_graphAlgo((DGraph)_graph);
+		set_Dgraph((DGraph)_graph);
 	}
 	/*
 	 * init a Graph_algo from a graph
 	 */
 	@Override
 	public void init(graph g) {
-		set_graphAlgo((DGraph)g);
+		set_Dgraph((DGraph)g);
 
 	}
 
@@ -106,23 +106,23 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 	@Override
 	public boolean isConnected() {
 
-		if(this.get_graphAlgo().get_graph().isEmpty()) {
+		if(this.get_Dgraph().get_graph().isEmpty()) {
 			return true;
 		}
 
-		int size = this.get_graphAlgo().nodeSize();
+		int size = this.get_Dgraph().nodeSize();
 		if(size == 1) {
 			return true;
 		}
 		nodeData current;
-		Iterator<node_data> iter = (Iterator<node_data>) this.get_graphAlgo().getV().iterator();
+		Iterator<node_data> iter = (Iterator<node_data>) this.get_Dgraph().getV().iterator();
 		nodeData first = (nodeData) iter.next();
 		while(iter.hasNext()) {
 			this.GreenTag();
 			if(isConnected(iter.next().getKey(),first)==0)
 				return false;
 		}
-		Iterator<node_data> iter2 = (Iterator<node_data>) this.get_graphAlgo().getV().iterator();
+		Iterator<node_data> iter2 = (Iterator<node_data>) this.get_Dgraph().getV().iterator();
 		while(iter2.hasNext()) {
 			this.GreenTag();
 			current = (nodeData) iter2.next();
@@ -149,7 +149,7 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 			Iterator<edge_data> iter = current.get_edges().values().iterator();
 			while(iter.hasNext()) {
 				edgeData current_edge = (edgeData)iter.next();
-				nodeData dest = (nodeData) this.get_graphAlgo().get_graph().get(current_edge.getDest());
+				nodeData dest = (nodeData) this.get_Dgraph().get_graph().get(current_edge.getDest());
 				sum += isConnected(toFind, dest);
 			}
 		}
@@ -168,8 +168,8 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 			throw new RuntimeException("No edge from a node to himself");
 		}
 
-		nodeData start =(nodeData) this._graphAlgo.getNode(src);
-		nodeData end =(nodeData) this._graphAlgo.getNode(dest);
+		nodeData start =(nodeData) this._Dgraph.getNode(src);
+		nodeData end =(nodeData) this._Dgraph.getNode(dest);
 		if(start == null) {
 			throw new RuntimeException("Source node doesn't exist in the graph");
 		}
@@ -182,7 +182,7 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 		// makes every tag green
 		GreenTag();
 		// check if there is a path
-		if(isConnected(dest,(nodeData)this.get_graphAlgo().getNode(src))==0) {
+		if(isConnected(dest,(nodeData)this.get_Dgraph().getNode(src))==0) {
 			return Integer.MAX_VALUE;
 		}
 		// makes every tag green
@@ -228,13 +228,13 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 		if(length == Integer.MAX_VALUE) {
 			return null;
 		}
-		nodeData current=(nodeData) this.get_graphAlgo().getNode(dest);
+		nodeData current=(nodeData) this.get_Dgraph().getNode(dest);
 		current.setBol('v');
 		listPathRev.add(current);
 		String info="";
-		while(current!=this.get_graphAlgo().getNode(src)) {
+		while(current!=this.get_Dgraph().getNode(src)) {
 			info=current.getInfo();
-			current=(nodeData) this.get_graphAlgo().getNode(Integer.parseInt(info));
+			current=(nodeData) this.get_Dgraph().getNode(Integer.parseInt(info));
 			current.setBol('v');
 			listPathRev.add(current);
 		}
@@ -251,7 +251,7 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 		ArrayList<Integer> newlist=(ArrayList<Integer>) targets;
 		for(int i=0;i<newlist.size();i++) {
 			// node dont exist in graph throw 
-			if(this.get_graphAlgo().get_graph().get(newlist.get(i)) == null) {
+			if(this.get_Dgraph().get_graph().get(newlist.get(i)) == null) {
 				throw new RuntimeException("Node "+newlist.get(i)+" don't exist in the graph");
 			}
 			int count=0;
@@ -285,7 +285,7 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 		int destKey;
 		while(iter.hasNext()) {
 			destKey = iter.next();
-			nodeData dest = (nodeData) this._graphAlgo.get_graph().get(destKey);
+			nodeData dest = (nodeData) this.get_Dgraph().get_graph().get(destKey);
 			if(dest.getBol() != 'v') {
 				try {
 					Tsplist.addAll(shortestPath(srcKey,destKey));
@@ -306,7 +306,7 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 				}
 			}
 			else {
-				Tsplist.add((nodeData) this._graphAlgo.get_graph().get(srcKey));
+				Tsplist.add((nodeData) this.get_Dgraph().get_graph().get(srcKey));
 			}
 
 		}
@@ -318,32 +318,32 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 	 */
 	@Override
 	public graph copy() {
-		graph g = new DGraph(this.get_graphAlgo());
+		graph g = new DGraph(this.get_Dgraph());
 		return g;
 	}
-	public DGraph get_graphAlgo() {
-		return _graphAlgo;
+	public DGraph get_Dgraph() {
+		return _Dgraph;
 	}
 
 
 
 	/**** private data *****/
 
-	private void set_graphAlgo(DGraph _graphAlgo) {
-		this._graphAlgo = _graphAlgo;
+	private void set_Dgraph(DGraph _graphAlgo) {
+		this._Dgraph = _graphAlgo;
 	}
 
 
 	private void ColorsetX(List<Integer> targets) {
 		Iterator<Integer> iter = targets.iterator();
 		while(iter.hasNext()) {
-			nodeData current = (nodeData) this.get_graphAlgo().get_graph().get(iter.next());
+			nodeData current = (nodeData) this.get_Dgraph().get_graph().get(iter.next());
 			current.setBol('x');
 		}
 	}
 
 	private void GreenTag() {
-		Iterator<node_data> iter = this.get_graphAlgo().getV().iterator();
+		Iterator<node_data> iter = this.get_Dgraph().getV().iterator();
 		while(iter.hasNext()) {
 			nodeData current = (nodeData)iter.next();
 			current.setTag(1);
@@ -351,13 +351,13 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 	}
 
 	private void SetNodeWeightMaxInt(){
-		Iterator<node_data> iter = this.get_graphAlgo().getV().iterator();
+		Iterator<node_data> iter = this.get_Dgraph().getV().iterator();
 		while(iter.hasNext()) {
 			nodeData current = (nodeData)iter.next();
 			current.setWeight(Double.MAX_VALUE);;
 		}
 
 	}
-	private DGraph _graphAlgo;
+	private DGraph _Dgraph;
 
 }

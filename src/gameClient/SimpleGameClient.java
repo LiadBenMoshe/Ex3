@@ -29,8 +29,7 @@ import oop_dataStructure.oop_graph;
  *
  */
 public class SimpleGameClient {
-	
-	
+
 	public static void main(String[] a) {
 		test1();
 
@@ -75,16 +74,14 @@ public class SimpleGameClient {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
 
+		game.startGame(); // should be a Thread!!! moveRobots(game, gg);
 		
-		  game.startGame(); // should be a Thread!!! moveRobots(game, gg);
-		//  moveRobots(game, gg);
-		/* while(game.isRunning()) { moveRobots(game, gg); }
+		   //moveRobots(game, gg); while(game.isRunning()) { moveRobots(game, gg); }
 		  
 		  String results = game.toString(); System.out.println("Game Over: "+results);
-		 */
 		 
+
 	}
 
 	/**
@@ -98,7 +95,6 @@ public class SimpleGameClient {
 	private static void moveRobots(game_service game, oop_graph gg) {
 		List<String> log = game.move();
 
-		
 		Iterator<String> iter = log.iterator();
 		while (iter.hasNext()) {
 			System.out.println(iter.next());
@@ -115,13 +111,13 @@ public class SimpleGameClient {
 					int dest = ttt.getInt("dest");
 
 					if (dest == -1) {
-						
+
 						dest = nextNode(gg, src);
 						game.chooseNextEdge(rid, dest);
 						System.out.println("Turn to node: " + dest + "  time to end:" + (t / 1000));
 						System.out.println(ttt);
 					}
-					
+
 					System.out.println(game.getRobots().get(0).toString());
 				} catch (JSONException e) {
 					e.printStackTrace();
