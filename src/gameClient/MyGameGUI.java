@@ -38,14 +38,17 @@ import dataStructure.node_data;
 public class MyGameGUI implements Runnable {
 
 	public MyGameGUI() {
-		game_service game = Game_Server.getServer(StdDraw.dialogScenario()); // you have [0,23] games
+		int scencario = StdDraw.dialogScenario();
+		
+		game_service game = Game_Server.getServer(scencario); // you have [0,23] games
 
+		
 		DGraph graph = new DGraph();
 		graph.init(game.getGraph());
 		Graph_Algo graphAlgo = new Graph_Algo(graph);
+		setKml(new KML_Logger(scencario));
 		setGraphAlgo(graphAlgo);
 		setGame(game);
-		setAutoDriver(new ashAutomatic(graphAlgo));
 		init();
 	}
 
@@ -59,237 +62,32 @@ public class MyGameGUI implements Runnable {
 		Fruits();
 		drawGraph();
 		StdDraw.Visible();
-		StdDraw.enableDoubleBuffering();
-		//RobotsStartPosition();
-		RobotsAutoPosition();
+		//setManual(new ManualPlayer(this));
+		setAutoPlayer(new AutomaticPlayer(this));
 		drawFruits();
-
 		drawRobots();
+		StdDraw.enableDoubleBuffering();
 		StdDraw.show();
-
+		
 		run();
 	}
 
 	private void repaint() {
-
 		this.drawGraph();
 		this.drawRobots();
 		this.drawFruits();
 		StdDraw.show();
 		// StdDraw.pause(50);
 	}
-
-	private void moveRobotsAuto() {
-		// update fruit
-
-		List<String> fruits = this.getGame().getFruits();
-		for (int i = 0; i < fruits.size(); i++) {
-			this.getFruitList().get(i).init(fruits.get(i));
-		}
-
-		List<String> log = this.getGame().move();
-		if (log != null) {
-			for (int i = 0; i < log.size(); i++) {
-				Robots r = this.getRobList().get(i);
-				r.init(log.get(i));
-
-				System.out.println(log.get(i));
-
-
-				//System.out.println(r.getDest());
-				//	System.out.println(r.getNextDest().isEmpty());
-				if (r.getDest() == -1 && r.getNextDest().isEmpty()) {
-					if(r.getTarget() != null) {
-						r.getTarget().setIsTarget(false);
-						r.setTarget(null);
-
-					}
-					if(r.getSpeed() <4) {
-						this.getGame().chooseNextEdge(i, nextValueAuto(r.getSrc(), i));
-					}
-					else {
-						this.getGame().chooseNextEdge(i, ClosestNodeAuto(r.getSrc(), i));
-					}
-				}
-				// r next list isnt empty
-				else if(r.getDest() == -1 && r.getTarget() != null) {
-					//System.out.println("hel");
-					this.getGame().chooseNextEdge(i, r.getNextDest().get(0).getKey());
-					r.getNextDest().remove(0);
-					//System.out.println(r.getNextDest().size());
-				}
-				else if(r.getDest() == -1) { 
-					r.getNextDest().clear();
-				}
-			}
-		}
-	}
-
-
-
-	/**
-	 * a very simple random walk implementation!
-	 * 
-	 * @param g
-	 * @param src
-	 * @return
-	 */
-	private int ClosestNodeAuto(int src, int rob_id) {
-		int ans[] = new int[2];
-		List<node_data> nextdest = new ArrayList<node_data>();
-		Fruits f = this.getAutoDriver().ClosestFruitbyShortestpath(this.getFruitList(), this.getRobList().get(rob_id));
-		if (f != null && !(f.isTarget())){
-			ans = this.getAutoDriver().nearestNode(f);
-			if (!(src == ans[0])) {
-				nextdest = this.getGraphAlgo().shortestPath(src, ans[0]);
-				// remove src
-				nextdest.remove(0);
-
-				this.getRobList().get(rob_id).getNextDest().addAll(nextdest);
-				this.getRobList().get(rob_id).getNextDest().add(this.getGraphAlgo().get_Dgraph().getNode(ans[1]));
-				this.getRobList().get(rob_id).setTarget(f);
-				f.setIsTarget(true);
-				return this.getRobList().get(rob_id).getNextDest().get(0).getKey();
-
-				// found and diffrent from src
-			} else if(ans[0] != -1){
-				this.getRobList().get(rob_id).setTarget(f);
-				f.setIsTarget(true);
-				return ans[1];
-			}
-		}
-		// maybe umprove
-		ArrayList<edge_data> edge = new ArrayList<edge_data>();
-		edge.addAll(this.getGraphAlgo().get_Dgraph().getE(src));
-		// all fruits has targets choose one randomly
-		return edge.get((int) (Math.random()*edge.size())).getDest();
-	}
-
-
-
-	/**
-	 * a very simple random walk implementation!
-	 * 
-	 * @param g
-	 * @param src
-	 * @return
-	 */
-	private int nextValueAuto(int src, int rob_id) {
-		int ans[] = new int[2];
-
-		List<node_data> nextdest = new ArrayList<node_data>();
-		Fruits f = this.getAutoDriver().mostValue(this.getFruitList());
-		if (f != null && !(f.isTarget())){
-
-			ans = this.getAutoDriver().nearestNode(f);
-			if (!(src == ans[0])) {
-				nextdest = this.getGraphAlgo().shortestPath(src, ans[0]);
-				// remove src
-				nextdest.remove(0);
-
-				this.getRobList().get(rob_id).getNextDest().addAll(nextdest);
-				this.getRobList().get(rob_id).getNextDest().add(this.getGraphAlgo().get_Dgraph().getNode(ans[1]));
-				this.getRobList().get(rob_id).setTarget(f);
-				f.setIsTarget(true);
-				return this.getRobList().get(rob_id).getNextDest().get(0).getKey();
-
-				// found and diffrent from src
-			} else if(ans[0] != -1){
-				this.getRobList().get(rob_id).setTarget(f);
-				f.setIsTarget(true);
-				return ans[1];
-			}
-
-		}
-		ArrayList<edge_data> edge = new ArrayList<edge_data>();
-		edge.addAll(this.getGraphAlgo().get_Dgraph().getE(src));
-		// all fruits has targets choose one randomly
-		return edge.get((int) (Math.random()*edge.size())).getDest();
-	}
-
-
-	/**
-	 * Moves each of the robots along the edge, in case the robot is on a node the
-	 * next destination (next edge) is chosen (randomly).
-	 * 
-	 * @param game
-	 * @param gg
-	 * @param log
-	 */
-	private void moveRobotsGUI() {
-
-		char c='0';
-		//update fruit
-
-		List<String> fruits = this.getGame().getFruits();
-		for (int i = 0; i < fruits.size(); i++) {
-			this.getFruitList().get(i).init(fruits.get(i));
-		}
-
-
-		List<String> log = this.getGame().move();
-		if (log != null) {
-			for (int i = 0; i < log.size(); i++) {
-				Robots r = this.getRobList().get(i);
-				r.init(log.get(i));
-
-				//System.out.println(log.get(i));
-
-				for(int j=0;j<this.getRobList().size();j++) {
-					c=(char) (j+'0');
-					if(StdDraw.isKeyPressed(c))
-						StdDraw.setPlayer(j);
-				}
-				if (r.getDest() == -1) {
-					this.getGame().chooseNextEdge(StdDraw.getPlayer(), nextNodeGUI(r.getSrc()));
-
-
-				}
-			}
-		}
-	}
-
-	/**
-	 * a very simple random walk implementation!
-	 * 
-	 * @param g
-	 * @param src
-	 * @return
-	 */
-	private int nextNodeGUI(int src) {
-		int nextDest = -1;
-		double x = 0, y = 0;
-
-
-		if(StdDraw.isMousePressed()) {
-
-			x = StdDraw.mouseX();
-			y = StdDraw.mouseY();
-		}
-		Point3D p = new Point3D(x, y);
-		Iterator<edge_data> iter = this.getGraphAlgo().get_Dgraph().getE(src).iterator();
-		edgeData edge;
-		while (iter.hasNext()) {
-			edge = (edgeData) iter.next();
-			double check = p.distance2D(edge.getNodeDest().getLocation());
-			if (check <= 0.0005) {
-				return edge.getDest();
-			}
-
-		}
-		return nextDest;
-	}
-
+	
 	/**
 	 * thread that start the game
 	 */
 	public void run() {
-		this.getGame().startGame(); // should be a Thread!!! moveRobots(game, gg);
-
-
+		this.getGame().startGame();
 		while(this.getGame().isRunning()) {
-			//moveRobotsGUI();
-			moveRobotsAuto();
+			//this.getManual().moveRobotsGUI();
+			this.getAutoPlayer().moveRobotsAuto();
 			try {
 				/* Thread.sleep(0); */
 				repaint();
@@ -299,6 +97,7 @@ public class MyGameGUI implements Runnable {
 
 		}
 		// game finished print results
+		getKml().KMLtoFile();
 		String results = this.getGame().toString();
 		JOptionPane.showMessageDialog(null, "Game Over: " + results);
 	}
@@ -306,10 +105,7 @@ public class MyGameGUI implements Runnable {
 	/**
 	 * drawRobots
 	 */
-	public void drawRobots() {
-
-		// drawGraph Robots
-
+	private void drawRobots() {
 		Iterator<Robots> r_iter = this.getRobList().iterator();
 		while (r_iter.hasNext()) {
 			Robots r = r_iter.next();
@@ -319,14 +115,16 @@ public class MyGameGUI implements Runnable {
 
 		StdDraw.setPenColor(Color.black);
 		StdDraw.setPenRadius(0.06);
-		StdDraw.text(get_x().get_min()+0.007,get_y().get_max(),"for pickacho:0 for balbazor:1 for squirtel:2 for carmander:3 for snorlax:4");
+		StdDraw.text(get_x().get_max()-0.007,get_y().get_max(),"for pickacho:0 for balbazor:1 for squirtel:2 for carmander:3 for snorlax:4");
+
 
 	}
+	
 
 	/**
 	 * drawFruits
 	 */
-	public void drawFruits() {
+	private void drawFruits() {
 		// drawGraph Robots
 		Iterator<Fruits> f_iter = this.getFruitList().iterator();
 		while (f_iter.hasNext()) {
@@ -356,28 +154,17 @@ public class MyGameGUI implements Runnable {
 
 		StdDraw.setXscale(x.get_min() - x.get_min() * 0.00001, x.get_max() + x.get_min() * 0.00001);
 		StdDraw.setYscale(y.get_min() - y.get_min() * 0.00001, y.get_max() + y.get_min() * 0.00001);
-		// background
-		String back = this.getGame().toString();
-		JSONObject obj;
-		try {
-			obj = new JSONObject(back);
 
-			String backpicture = obj.getJSONObject("GameServer").getString("graph");
-			double AverageX = ((this.get_x().get_max() + this.get_x().get_min()) / 2) * 0.00001;
-			double AverageY = ((this.get_y().get_max() + this.get_y().get_min()) / 2) * 0.00001;
 
-			StdDraw.picture(this.get_x().get_max() - 0.0083, this.get_y().get_min() + 0.0031, "data\\map.png", 0.05,
-					0.01);
-		} catch (JSONException e) {
-
-			e.printStackTrace();
-		}
 
 		// directions compute;
 		double directionX = 0;
 		double directionY = 0;
-		double middleX = 0;
-		double middleY = 0;
+		
+		// for drawing edge weight
+		/*
+		 * double middleX = 0; double middleY = 0;
+		 */
 
 		// draw points
 		Iterator<node_data> iter = this.getGraphAlgo().get_Dgraph().getV().iterator();
@@ -404,7 +191,8 @@ public class MyGameGUI implements Runnable {
 				StdDraw.setPenColor(Color.CYAN);
 				StdDraw.setPenRadius(0.015);
 				StdDraw.point(directionX, directionY);
-				// edge weight
+				// drawing edge weight
+				
 				/*
 				 * middleX = (current.getLocation().x() +
 				 * current_edge.getNodeDest().getLocation().x()) / 2; middleY =
@@ -431,86 +219,9 @@ public class MyGameGUI implements Runnable {
 
 		}
 	}
-
-	/**
-	 * get number of robots
-	 */
-	private void RobotsStartPosition() {
-		JSONObject GameJson;
-		try {
-			GameJson = new JSONObject(this.getGame().toString()).getJSONObject("GameServer");
-			int Robot_num = GameJson.getInt("robots");
-			setRobList(new ArrayList<Robots>(Robot_num));
-			for (int a = 0; a < Robot_num; a++) {
-				this.getGame().addRobot(StdDraw.dialogRobots(a, this.getGraphAlgo().get_Dgraph().nodeSize()));
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		// adding robots
-		Iterator<String> iter = this.getGame().getRobots().iterator();
-		while (iter.hasNext()) {
-			this.getRobList().add(new Robots(iter.next()));
-		}
-	}
-
-	private void RobotsAutoPosition() {
-		JSONObject GameJson;
-		try {
-			GameJson = new JSONObject(this.getGame().toString()).getJSONObject("GameServer");
-			int Robot_num = GameJson.getInt("robots");
-			int[] nextNode = new int[2];
-			// if less fruit then robots
-			setRobList(new ArrayList<Robots>(Robot_num));
-			// less fruits
-			if(this.getFruitList().size() < Robot_num) {
-				for (int i = 0; i < this.getFruitList().size(); i++) {
-					Fruits f = this.getAutoDriver().mostValue(this.getFruitList());
-					nextNode = this.getAutoDriver().nearestNode(f);
-
-					if (nextNode[0] == -1) {
-						this.getGame().addRobot((i + 6) % this.getGraphAlgo().get_Dgraph().nodeSize());
-					} else {
-						this.getGame().addRobot(nextNode[0]);
-
-					}
-				}
-			}
-			else {
-				for (int i = 0; i < Robot_num; i++) {
-					Fruits f = this.getAutoDriver().mostValue(this.getFruitList());
-					nextNode = this.getAutoDriver().nearestNode(f);
-
-					if (nextNode[0] == -1) {
-						this.getGame().addRobot((i + 6) % this.getGraphAlgo().get_Dgraph().nodeSize());
-					} else {
-						this.getGame().addRobot(nextNode[0]);
-						f.setIsTarget(true);
-					}
-				}
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		Iterator<Fruits> f_iter = this.getFruitList().iterator();
-		while(f_iter.hasNext()) {
-			f_iter.next().setIsTarget(false);
-		}
-
-		// adding robots
-		Iterator<String> iter = this.getGame().getRobots().iterator();
-		while (iter.hasNext()) {
-			String s = iter.next();
-			Robots r = new Robots(s);
-			this.getRobList().add(r);
-			r.setNextDest(new ArrayList<node_data>());
-		}
-	}
-
 	private void Fruits() {
 		// adding fruits
-		setFruitList(new ArrayList<Fruits>());
+		this.setFruitList(new ArrayList<Fruits>());
 		Iterator<String> iter = this.getGame().getFruits().iterator();
 		while (iter.hasNext()) {
 			this.getFruitList().add(new Fruits(iter.next()));
@@ -521,16 +232,8 @@ public class MyGameGUI implements Runnable {
 		return _graphAlgo;
 	}
 
-	public void setGraphAlgo(Graph_Algo _graph) {
-		this._graphAlgo = _graph;
-	}
-
 	public game_service getGame() {
 		return _game;
-	}
-
-	public void setGame(game_service _game) {
-		this._game = _game;
 	}
 
 	public ArrayList<Robots> getRobList() {
@@ -548,38 +251,71 @@ public class MyGameGUI implements Runnable {
 	public void setFruitList(ArrayList<Fruits> fruit_list) {
 		this._fruit_list = fruit_list;
 	}
+	
 
-	public Range get_x() {
-		return _x;
+	public AutomaticPlayer getAutoPlayer() {
+		return _auto;
 	}
 
-	public void set_x(Range _x) {
-		this._x = _x;
+	public ManualPlayer getManual() {
+		return _manual;
+	}
+	public KML_Logger getKml() {
+		return _kml;
 	}
 
-	public Range get_y() {
-		return _y;
-	}
+	
 
-	public void set_y(Range _y) {
-		this._y = _y;
-	}
-
-	public ashAutomatic getAutoDriver() {
-		return _driver;
-	}
-
-	public void setAutoDriver(ashAutomatic _auto) {
-		this._driver = _auto;
-	}
-
-	/**** data *****/
-
-	private ashAutomatic _driver;
-
+	/****private  data *****/
+	private AutomaticPlayer _auto;
+	private ManualPlayer _manual;
 	private Range _x, _y;
 	private game_service _game;
 	private Graph_Algo _graphAlgo;
 	private ArrayList<Robots> _rob_list;
 	private ArrayList<Fruits> _fruit_list;
+	private KML_Logger _kml;
+	
+	
+	
+	/******* getters/setter *****/
+
+
+	private void setKml(KML_Logger _kml) {
+		this._kml = _kml;
+	}
+	
+	
+	
+	private void setManual(ManualPlayer _manual) {
+		this._manual = _manual;
+	}
+	private void setGame(game_service _game) {
+		this._game = _game;
+	}
+	
+	private void setGraphAlgo(Graph_Algo _graph) {
+		this._graphAlgo = _graph;
+	}
+
+	private Range get_x() {
+		return _x;
+	}
+
+	private void set_x(Range _x) {
+		this._x = _x;
+	}
+
+	private Range get_y() {
+		return _y;
+	}
+
+	private void set_y(Range _y) {
+		this._y = _y;
+	}
+	
+	private void setAutoPlayer(AutomaticPlayer _auto) {
+		this._auto = _auto;
+	}
+
 }
