@@ -5,9 +5,12 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -43,10 +46,13 @@ public class MyGameGUI implements Runnable {
 		game_service game = Game_Server.getServer(scencario); // you have [0,23] games
 
 		
+		// user choice of game type (manual or automatic)
+		setType(StdDraw.dialogType());
+		
 		DGraph graph = new DGraph();
 		graph.init(game.getGraph());
 		Graph_Algo graphAlgo = new Graph_Algo(graph);
-		setKml(new KML_Logger(scencario));
+		setKml(new KML_Logger(scencario, graph));
 		setGraphAlgo(graphAlgo);
 		setGame(game);
 		init();
@@ -62,8 +68,12 @@ public class MyGameGUI implements Runnable {
 		Fruits();
 		drawGraph();
 		StdDraw.Visible();
-		//setManual(new ManualPlayer(this));
-		setAutoPlayer(new AutomaticPlayer(this));
+		if(getType() == 1) {
+			setAutoPlayer(new AutomaticPlayer(this));
+		}else {
+			setManual(new ManualPlayer(this));
+		}
+
 		drawFruits();
 		drawRobots();
 		StdDraw.enableDoubleBuffering();
@@ -86,8 +96,11 @@ public class MyGameGUI implements Runnable {
 	public void run() {
 		this.getGame().startGame();
 		while(this.getGame().isRunning()) {
-			//this.getManual().moveRobotsGUI();
-			this.getAutoPlayer().moveRobotsAuto();
+			if(getType() == 1) {
+				this.getAutoPlayer().moveRobotsAuto();
+			}else {
+				this.getManual().moveRobotsGUI();
+			}
 			try {
 				/* Thread.sleep(0); */
 				repaint();
@@ -97,9 +110,32 @@ public class MyGameGUI implements Runnable {
 
 		}
 		// game finished print results
-		getKml().KMLtoFile();
 		String results = this.getGame().toString();
-		JOptionPane.showMessageDialog(null, "Game Over: " + results);
+		StdDraw.clear();
+		StdDraw.setScale(-5, 5);
+		try {
+			JSONObject resultsJson = new JSONObject(results);
+			JSONObject GameServer = resultsJson.getJSONObject("GameServer");
+			int moves = GameServer.getInt("moves");
+			int Score = GameServer.getInt("grade");
+			
+			StdDraw.setPenColor(Color.BLACK);
+			StdDraw.setFont(new Font("Arial", Font.PLAIN, 40));
+			StdDraw.text(0, 3, "Game over:");
+			StdDraw.setFont(new Font("Arial", Font.PLAIN, 25));
+			StdDraw.text(0,2, "you did "+moves+" Moves");
+			StdDraw.text(0,1.5, "Your Grade is: "+Score);
+			StdDraw.show();
+		
+	} catch (JSONException e) {
+		e.printStackTrace();
+	}
+
+		//JOptionPane.showMessageDialog(null, "Game Over: " + results);
+		
+		if(StdDraw.dialogKML() == 0) {
+			getKml().KMLtoFile();
+		}
 	}
 
 	/**
@@ -113,11 +149,13 @@ public class MyGameGUI implements Runnable {
 
 		}
 
-		StdDraw.setPenColor(Color.black);
-		StdDraw.setPenRadius(0.06);
-		StdDraw.text(get_x().get_max()-0.007,get_y().get_max(),"for pickacho:0 for balbazor:1 for squirtel:2 for carmander:3 for snorlax:4");
-
-
+		/*
+		 * StdDraw.setPenColor(Color.black); StdDraw.setPenRadius(0.06);
+		 * StdDraw.text(get_x().get_max()-0.007,get_y().get_max()
+		 * ,"for pickacho:0 for balbazor:1 for squirtel:2 for carmander:3 for snorlax:4"
+		 * );
+		 * 
+		 */
 	}
 	
 
@@ -227,7 +265,9 @@ public class MyGameGUI implements Runnable {
 			this.getFruitList().add(new Fruits(iter.next()));
 		}
 	}
-
+	
+		
+	
 	public Graph_Algo getGraphAlgo() {
 		return _graphAlgo;
 	}
@@ -275,6 +315,7 @@ public class MyGameGUI implements Runnable {
 	private ArrayList<Robots> _rob_list;
 	private ArrayList<Fruits> _fruit_list;
 	private KML_Logger _kml;
+	private int _type;
 	
 	
 	
@@ -284,7 +325,6 @@ public class MyGameGUI implements Runnable {
 	private void setKml(KML_Logger _kml) {
 		this._kml = _kml;
 	}
-	
 	
 	
 	private void setManual(ManualPlayer _manual) {
@@ -316,6 +356,14 @@ public class MyGameGUI implements Runnable {
 	
 	private void setAutoPlayer(AutomaticPlayer _auto) {
 		this._auto = _auto;
+	}
+
+	private int getType() {
+		return _type;
+	}
+
+	private void setType(int _type) {
+		this._type = _type;
 	}
 
 }

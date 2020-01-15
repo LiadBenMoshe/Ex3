@@ -170,9 +170,6 @@ public class AutomaticPlayer {
 				int[] nextNode = new int[2];
 				// if less fruit then robots
 				getGUI().setRobList(new ArrayList<Robots>(Robot_num));
-				for(int i = 0; i < Robot_num; i++) {
-					getGUI().getKml().icon(i);
-				}
 				// less fruits
 				if(getGUI().getFruitList().size() < Robot_num) {
 					for (int i = 0; i < getGUI().getFruitList().size(); i++) {
@@ -188,7 +185,7 @@ public class AutomaticPlayer {
 					}
 				}
 				else {
-					System.out.println("hwloo");
+	
 					for (int i = 0; i < Robot_num; i++) {
 						Fruits f = this.mostValue(getGUI().getFruitList());
 						nextNode = this.nearestNode(f);
@@ -226,6 +223,14 @@ public class AutomaticPlayer {
 			List<String> fruits = getGUI().getGame().getFruits();
 			for (int i = 0; i < fruits.size(); i++) {
 				getGUI().getFruitList().get(i).init(fruits.get(i));
+				Fruits f = getGUI().getFruitList().get(i);
+				int type = getGUI().getFruitList().get(i).getType();
+				if(type == -1) {
+				getGUI().getKml().Placemark(5, f.getPosX(), f.getPosY(), getGUI().getKml().currentTime());
+				}
+				else {
+					getGUI().getKml().Placemark(6, f.getPosX(), f.getPosY(), getGUI().getKml().currentTime());
+				}
 			}
 
 			List<String> log = getGUI().getGame().move();
@@ -236,7 +241,8 @@ public class AutomaticPlayer {
 					
 					
 		
-					getGUI().getKml().Placemark(r.getId(), r.getPosX(), r.getPosY(), getGUI().getGame().timeToEnd());
+					getGUI().getKml().Placemark(r.getId(), r.getPosX(), r.getPosY(), getGUI().getKml().currentTime());
+
 					
 					
 				
@@ -342,6 +348,10 @@ public class AutomaticPlayer {
 			}
 			return -1;
 		}
+		
+		
+		
+		
 
 
 	
