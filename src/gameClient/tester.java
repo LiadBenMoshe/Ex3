@@ -13,7 +13,8 @@ public class tester {
 		String g = game.getGraph();
 		DGraph gg = new DGraph();
 		gg.init(g);
-		MyGameGUI f = new MyGameGUI();
+		//MyGameGUI f = new MyGameGUI();
+		KML_Logger2.make("liad");
 	}
 
 }

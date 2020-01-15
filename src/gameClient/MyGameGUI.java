@@ -60,8 +60,8 @@ public class MyGameGUI implements Runnable {
 		drawGraph();
 		StdDraw.Visible();
 		StdDraw.enableDoubleBuffering();
-		//RobotsStartPosition();
-		RobotsAutoPosition();
+		RobotsStartPosition();
+		//RobotsAutoPosition();
 		drawFruits();
 
 		drawRobots();
@@ -288,8 +288,8 @@ public class MyGameGUI implements Runnable {
 
 
 		while(this.getGame().isRunning()) {
-			//moveRobotsGUI();
-			moveRobotsAuto();
+			moveRobotsGUI();
+			//moveRobotsAuto();
 			try {
 				/* Thread.sleep(0); */
 				repaint();
@@ -366,8 +366,8 @@ public class MyGameGUI implements Runnable {
 			double AverageX = ((this.get_x().get_max() + this.get_x().get_min()) / 2) * 0.00001;
 			double AverageY = ((this.get_y().get_max() + this.get_y().get_min()) / 2) * 0.00001;
 
-			StdDraw.picture(this.get_x().get_max() - 0.0083, this.get_y().get_min() + 0.0031, "data\\map.png", 0.05,
-					0.01);
+			StdDraw.picture((this.get_x().get_max()+this.get_x().get_min())/2, (this.get_y().get_min()+this.get_y().get_max())/2, "data\\map.png", 0.05,
+					0.02);
 		} catch (JSONException e) {
 
 			e.printStackTrace();
