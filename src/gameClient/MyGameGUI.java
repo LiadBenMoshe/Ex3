@@ -5,8 +5,15 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,18 +44,24 @@ import dataStructure.edge_data;
 import dataStructure.graph;
 import dataStructure.nodeData;
 import dataStructure.node_data;
+import sun.audio.AudioData;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
+import sun.audio.ContinuousAudioDataStream;
 
 public class MyGameGUI implements Runnable {
 
 	public MyGameGUI() {
 		int scencario = StdDraw.dialogScenario();
-		
+
 		game_service game = Game_Server.getServer(scencario); // you have [0,23] games
+
 
 		
 		// user choice of game type (manual or automatic)
 		setType(StdDraw.dialogType());
 		
+
 		DGraph graph = new DGraph();
 		graph.init(game.getGraph());
 		Graph_Algo graphAlgo = new Graph_Algo(graph);
@@ -68,17 +81,19 @@ public class MyGameGUI implements Runnable {
 		Fruits();
 		drawGraph();
 		StdDraw.Visible();
+
 		if(getType() == 1) {
 			setAutoPlayer(new AutomaticPlayer(this));
 		}else {
 			setManual(new ManualPlayer(this));
 		}
 
+
 		drawFruits();
 		drawRobots();
 		StdDraw.enableDoubleBuffering();
 		StdDraw.show();
-		
+
 		run();
 	}
 
@@ -89,18 +104,21 @@ public class MyGameGUI implements Runnable {
 		StdDraw.show();
 		// StdDraw.pause(50);
 	}
-	
+
 	/**
 	 * thread that start the game
 	 */
 	public void run() {
 		this.getGame().startGame();
+		music();
 		while(this.getGame().isRunning()) {
+
 			if(getType() == 1) {
 				this.getAutoPlayer().moveRobotsAuto();
 			}else {
 				this.getManual().moveRobotsGUI();
 			}
+
 			try {
 				/* Thread.sleep(0); */
 				repaint();
@@ -109,6 +127,7 @@ public class MyGameGUI implements Runnable {
 			}
 
 		}
+		
 		// game finished print results
 		String results = this.getGame().toString();
 		StdDraw.clear();
@@ -157,7 +176,7 @@ public class MyGameGUI implements Runnable {
 		 * 
 		 */
 	}
-	
+
 
 	/**
 	 * drawFruits
@@ -194,11 +213,15 @@ public class MyGameGUI implements Runnable {
 		StdDraw.setYscale(y.get_min() - y.get_min() * 0.00001, y.get_max() + y.get_min() * 0.00001);
 
 
+		StdDraw.picture((this.get_x().get_max()+this.get_x().get_min())/2, (this.get_y().get_min()+this.get_y().get_max())/2, "data\\map.png", 0.05,
+				0.02);
+
+
 
 		// directions compute;
 		double directionX = 0;
 		double directionY = 0;
-		
+
 		// for drawing edge weight
 		/*
 		 * double middleX = 0; double middleY = 0;
@@ -230,7 +253,7 @@ public class MyGameGUI implements Runnable {
 				StdDraw.setPenRadius(0.015);
 				StdDraw.point(directionX, directionY);
 				// drawing edge weight
-				
+
 				/*
 				 * middleX = (current.getLocation().x() +
 				 * current_edge.getNodeDest().getLocation().x()) / 2; middleY =
@@ -257,6 +280,9 @@ public class MyGameGUI implements Runnable {
 
 		}
 	}
+
+
+
 	private void Fruits() {
 		// adding fruits
 		this.setFruitList(new ArrayList<Fruits>());
@@ -265,9 +291,36 @@ public class MyGameGUI implements Runnable {
 			this.getFruitList().add(new Fruits(iter.next()));
 		}
 	}
-	
-		
-	
+
+	 public static void music() 
+	    {       
+	        AudioPlayer MGP = AudioPlayer.player;
+	        AudioStream BGM;
+	        AudioData MD;
+
+	        ContinuousAudioDataStream loop = null;
+
+	        try
+	        {
+	            InputStream test = new FileInputStream("data\\Pokemon.wav");
+	            BGM = new AudioStream(test);
+	            AudioPlayer.player.start(BGM);
+	            MD = BGM.getData();
+	            
+	            loop = new ContinuousAudioDataStream(MD);
+
+	        }
+	        catch(FileNotFoundException e){
+	            
+	        }
+	        catch(IOException error)
+	        {
+	            
+	        }
+	        MGP.start(loop);
+	    }
+
+
 	public Graph_Algo getGraphAlgo() {
 		return _graphAlgo;
 	}
@@ -291,7 +344,7 @@ public class MyGameGUI implements Runnable {
 	public void setFruitList(ArrayList<Fruits> fruit_list) {
 		this._fruit_list = fruit_list;
 	}
-	
+
 
 	public AutomaticPlayer getAutoPlayer() {
 		return _auto;
@@ -304,7 +357,7 @@ public class MyGameGUI implements Runnable {
 		return _kml;
 	}
 
-	
+
 
 	/****private  data *****/
 	private AutomaticPlayer _auto;
@@ -316,24 +369,22 @@ public class MyGameGUI implements Runnable {
 	private ArrayList<Fruits> _fruit_list;
 	private KML_Logger _kml;
 	private int _type;
-	
-	
-	
+
 	/******* getters/setter *****/
 
 
 	private void setKml(KML_Logger _kml) {
 		this._kml = _kml;
 	}
-	
-	
+
+
 	private void setManual(ManualPlayer _manual) {
 		this._manual = _manual;
 	}
 	private void setGame(game_service _game) {
 		this._game = _game;
 	}
-	
+
 	private void setGraphAlgo(Graph_Algo _graph) {
 		this._graphAlgo = _graph;
 	}
@@ -353,7 +404,7 @@ public class MyGameGUI implements Runnable {
 	private void set_y(Range _y) {
 		this._y = _y;
 	}
-	
+
 	private void setAutoPlayer(AutomaticPlayer _auto) {
 		this._auto = _auto;
 	}
