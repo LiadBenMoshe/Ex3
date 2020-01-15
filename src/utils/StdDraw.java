@@ -721,6 +721,10 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	}
 
 	/****** Our porject The maze of waze changes******/
+	/**
+	 * asking user for scenario number for the game
+	 * @return number of scenario
+	 */
 	public static int dialogScenario(){
 		try {
 			String input = JOptionPane.showInputDialog(frame,"Please Enter Scenario number from [0,23]\n"
@@ -739,7 +743,12 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		}
 	}
 	
-
+/**
+ * asking user to place the robot on the graph (only in manual mode)
+ * @param id - robot id
+ * @param size - num of nodes
+ * @return int - node location for each robot
+ */
 	public static int dialogRobots(int id, int size){
 		try {
 
@@ -758,7 +767,9 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		}
 	}
 
-
+/**
+ * set frame visable only when call this function - false by default
+ */
 	public static void Visible() {
 		if(frame != null) frame.setVisible(true);
 	}
