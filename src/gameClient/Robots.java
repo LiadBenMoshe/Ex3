@@ -15,6 +15,10 @@ public class Robots {
 		init(r);
 	}
 
+	public Robots() {
+		// TODO Auto-generated constructor stub
+	}
+
 	/**
 	 * init new graph from string
 	 * @param g - string with json format
