@@ -99,7 +99,7 @@ public class MyGameGUI implements Runnable {
 
 			//this.getManual().moveRobotsGUI();
 			this.getAutoPlayer().moveRobotsAuto();
-			
+
 
 			try {
 				/* Thread.sleep(0); */
@@ -109,7 +109,7 @@ public class MyGameGUI implements Runnable {
 			}
 
 		}
-		
+
 		// game finished print results
 		getKml().KMLtoFile();
 		String results = this.getGame().toString();
@@ -123,7 +123,12 @@ public class MyGameGUI implements Runnable {
 		Iterator<Robots> r_iter = this.getRobList().iterator();
 		while (r_iter.hasNext()) {
 			Robots r = r_iter.next();
-			StdDraw.picture(r.getPosX(), r.getPosY(), "data\\p" + r.getId() + ".png");
+			if(r.getSpeed()==5) {
+				StdDraw.picture(r.getPosX(), r.getPosY(), "data\\p" + (r.getId()+5) + ".png");
+
+			}
+			else
+				StdDraw.picture(r.getPosX(), r.getPosY(), "data\\p" + r.getId() + ".png");
 
 		}
 
@@ -248,33 +253,33 @@ public class MyGameGUI implements Runnable {
 			this.getFruitList().add(new Fruits(iter.next()));
 		}
 	}
-	 public static void music() 
-	    {       
-	        AudioPlayer MGP = AudioPlayer.player;
-	        AudioStream BGM;
-	        AudioData MD;
+	public static void music() 
+	{       
+		AudioPlayer MGP = AudioPlayer.player;
+		AudioStream BGM;
+		AudioData MD;
 
-	        ContinuousAudioDataStream loop = null;
+		ContinuousAudioDataStream loop = null;
 
-	        try
-	        {
-	            InputStream test = new FileInputStream("data\\Pokemon.wav");
-	            BGM = new AudioStream(test);
-	            AudioPlayer.player.start(BGM);
-	            MD = BGM.getData();
-	            
-	            loop = new ContinuousAudioDataStream(MD);
+		try
+		{
+			InputStream test = new FileInputStream("data\\Pokemon.wav");
+			BGM = new AudioStream(test);
+			AudioPlayer.player.start(BGM);
+			MD = BGM.getData();
 
-	        }
-	        catch(FileNotFoundException e){
-	            
-	        }
-	        catch(IOException error)
-	        {
-	            
-	        }
-	        MGP.start(loop);
-	    }
+			loop = new ContinuousAudioDataStream(MD);
+
+		}
+		catch(FileNotFoundException e){
+
+		}
+		catch(IOException error)
+		{
+
+		}
+		MGP.start(loop);
+	}
 
 	public Graph_Algo getGraphAlgo() {
 		return _graphAlgo;
