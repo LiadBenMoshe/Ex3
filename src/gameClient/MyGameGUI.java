@@ -34,14 +34,12 @@ import org.json.JSONObject;
 import Server.Game_Server;
 import Server.game_service;
 import algorithms.Graph_Algo;
-import utils.Point3D;
 import utils.Range;
 import utils.StdDraw;
 import dataStructure.DGraph;
 
 import dataStructure.edgeData;
 import dataStructure.edge_data;
-import dataStructure.graph;
 import dataStructure.nodeData;
 import dataStructure.node_data;
 import sun.audio.AudioData;
@@ -114,17 +112,17 @@ public class MyGameGUI implements Runnable {
 	public void run() {
 		this.getGame().startGame();
 		music();
-		while(this.getGame().isRunning()) {
-			
+		while(this.getGame().isRunning()) {			
 			if(getType() == 1) {
 				this.getAutoPlayer().moveRobotsAuto();
 			}else {
 				this.getManual().moveRobotsGUI();
+
 			}
  
 				repaint();
 		}
-		
+
 		// game finished print results
 		String results = this.getGame().toString();
 		StdDraw.clear();
@@ -159,7 +157,12 @@ public class MyGameGUI implements Runnable {
 		Iterator<Robots> r_iter = this.getRobList().iterator();
 		while (r_iter.hasNext()) {
 			Robots r = r_iter.next();
-			StdDraw.picture(r.getPosX(), r.getPosY(), "data\\p" + r.getId() + ".png");
+			if(r.getSpeed()==5) {
+				StdDraw.picture(r.getPosX(), r.getPosY(), "data\\p" + (r.getId()+5) + ".png");
+
+			}
+			else
+				StdDraw.picture(r.getPosX(), r.getPosY(), "data\\p" + r.getId() + ".png");
 
 		}
 	}
@@ -283,6 +286,7 @@ public class MyGameGUI implements Runnable {
 		}
 	}
 
+
 	/**
 	 * playing music while the game running
 	 */
@@ -313,6 +317,7 @@ public class MyGameGUI implements Runnable {
 	        }
 	        MGP.start(loop);
 	    }
+
 
 
 	public Graph_Algo getGraphAlgo() {
