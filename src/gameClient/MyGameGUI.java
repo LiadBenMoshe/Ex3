@@ -108,7 +108,7 @@ public class MyGameGUI implements Runnable {
 	/**
 	 * thread that start the game, play music and repaint
 	 */
-//	@Override
+	@Override
 	public void run() {
 		this.getGame().startGame();
 		music();
@@ -119,7 +119,6 @@ public class MyGameGUI implements Runnable {
 				this.getManual().moveRobotsGUI();
 
 			}
- 
 				repaint();
 		}
 
@@ -150,7 +149,7 @@ public class MyGameGUI implements Runnable {
 	}
 
 	/**
-	 * drawRobots using pictures from data folder
+	 * drawRobots using pictures from icons folder
 	 * icons from https://www.flaticon.com/
 	 */
 	private void drawRobots() {
@@ -158,18 +157,18 @@ public class MyGameGUI implements Runnable {
 		while (r_iter.hasNext()) {
 			Robots r = r_iter.next();
 			if(r.getSpeed()==5) {
-				StdDraw.picture(r.getPosX(), r.getPosY(), "data\\p" + (r.getId()+5) + ".png");
+				StdDraw.picture(r.getPosX(), r.getPosY(), "icons\\p" + (r.getId()+5) + ".png");
 
 			}
 			else
-				StdDraw.picture(r.getPosX(), r.getPosY(), "data\\p" + r.getId() + ".png");
+				StdDraw.picture(r.getPosX(), r.getPosY(), "icons\\p" + r.getId() + ".png");
 
 		}
 	}
 
 
 	/**
-	 * drawFruits using pictures from data folder
+	 * drawFruits using pictures from icons folder
 	 * icons from https://www.flaticon.com/
 	 */
 	private void drawFruits() {
@@ -178,12 +177,12 @@ public class MyGameGUI implements Runnable {
 		while (f_iter.hasNext()) {
 			Fruits f = f_iter.next();
 			if (f.getType() == 1) {
-				StdDraw.picture(f.getPosX(), f.getPosY(), "data\\apple.png");
+				StdDraw.picture(f.getPosX(), f.getPosY(), "icons\\apple.png");
 
 			}
 			// type -1
 			else {
-				StdDraw.picture(f.getPosX(), f.getPosY(), "data\\banana.png");
+				StdDraw.picture(f.getPosX(), f.getPosY(), "icons\\banana.png");
 			}
 		}
 
@@ -204,7 +203,7 @@ public class MyGameGUI implements Runnable {
 		StdDraw.setYscale(y.get_min() - y.get_min() * 0.00001, y.get_max() + y.get_min() * 0.00001);
 
 
-		StdDraw.picture((this.get_x().get_max()+this.get_x().get_min())/2, (this.get_y().get_min()+this.get_y().get_max())/2, "data\\map.png", 0.05,
+		StdDraw.picture((this.get_x().get_max()+this.get_x().get_min())/2, (this.get_y().get_min()+this.get_y().get_max())/2, "icons\\map.png", 0.05,
 				0.02);
 
 		// directions compute;
@@ -300,7 +299,7 @@ public class MyGameGUI implements Runnable {
 
 	        try
 	        {
-	            InputStream test = new FileInputStream("data\\Pokemon.wav");
+	            InputStream test = new FileInputStream("icons\\Pokemon.wav");
 	            BGM = new AudioStream(test);
 	            AudioPlayer.player.start(BGM);
 	            MD = BGM.getData();
