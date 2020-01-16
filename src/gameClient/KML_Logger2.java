@@ -36,6 +36,7 @@ public class KML_Logger2 {
 		      FileWriter myWriter = new FileWriter(filename);
 		      myWriter.write(make_start(filename));
 		      myWriter.write(make_style_id("p0"));
+		      
 		      myWriter.write(KML_write_Placemark(Time.UTC(2001,11,3,12, 33, 31),new Point3D(12.21,11.1),"p0"));
 		      myWriter.write("  </Document>\r\n"+"</kml>");
 		      myWriter.close();

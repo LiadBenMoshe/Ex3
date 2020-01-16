@@ -188,7 +188,6 @@ public class AutomaticPlayer {
 					}
 				}
 				else {
-					System.out.println("hwloo");
 					for (int i = 0; i < Robot_num; i++) {
 						Fruits f = this.mostValue(getGUI().getFruitList());
 						nextNode = this.nearestNode(f);

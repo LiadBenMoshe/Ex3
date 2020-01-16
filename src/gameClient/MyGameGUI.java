@@ -99,6 +99,7 @@ public class MyGameGUI implements Runnable {
 
 			//this.getManual().moveRobotsGUI();
 			this.getAutoPlayer().moveRobotsAuto();
+			
 
 
 			try {
@@ -123,7 +124,10 @@ public class MyGameGUI implements Runnable {
 		Iterator<Robots> r_iter = this.getRobList().iterator();
 		while (r_iter.hasNext()) {
 			Robots r = r_iter.next();
-			if(r.getSpeed()==5) {
+			if(r.getSpeed()==2) {
+				StdDraw.picture(r.getPosX(), r.getPosY(), "data\\p" + (r.getId()+10) + ".png");
+			}
+			else if(r.getSpeed()==5) {
 				StdDraw.picture(r.getPosX(), r.getPosY(), "data\\p" + (r.getId()+5) + ".png");
 
 			}
@@ -254,7 +258,8 @@ public class MyGameGUI implements Runnable {
 		}
 	}
 	public static void music() 
-	{       
+	{  
+		
 		AudioPlayer MGP = AudioPlayer.player;
 		AudioStream BGM;
 		AudioData MD;
