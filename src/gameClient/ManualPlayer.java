@@ -41,6 +41,14 @@ public class ManualPlayer {
 		List<String> fruits = getGUI().getGame().getFruits();
 		for (int i = 0; i < fruits.size(); i++) {
 			getGUI().getFruitList().get(i).init(fruits.get(i));
+			Fruits f = getGUI().getFruitList().get(i);
+			int type = getGUI().getFruitList().get(i).getType();
+			if(type == -1) {
+			getGUI().getKml().Placemark(5, f.getPosX(), f.getPosY(), getGUI().getKml().currentTime());
+			}
+			else {
+				getGUI().getKml().Placemark(6, f.getPosX(), f.getPosY(), getGUI().getKml().currentTime());
+			}
 		}
 
 
@@ -50,13 +58,17 @@ public class ManualPlayer {
 				Robots r = getGUI().getRobList().get(i);
 				r.init(log.get(i));
 
-				//System.out.println(log.get(i));
+				
+				getGUI().getKml().Placemark(r.getId(), r.getPosX(), r.getPosY(), getGUI().getKml().currentTime());
 
 				for(int j=0;j < getGUI().getRobList().size();j++) {
 					c=(char) (j+'0');
 					if(StdDraw.isKeyPressed(c))
 						StdDraw.setPlayer(j);
 				}
+				
+				
+				
 				if (r.getDest() == -1) {
 					getGUI().getGame().chooseNextEdge(StdDraw.getPlayer(), nextNodeGUI(r.getSrc()));
 
@@ -107,7 +119,9 @@ public class ManualPlayer {
 			getGUI().setRobList(new ArrayList<Robots>(Robot_num));
 			for (int a = 0; a < Robot_num; a++) {
 				getGUI().getGame().addRobot(StdDraw.dialogRobots(a, getGUI().getGraphAlgo().get_Dgraph().nodeSize()));
+				getGUI().getKml().icon(a);
 			}
+
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -124,13 +138,17 @@ public class ManualPlayer {
 		return _gui;
 	}
 
-	private void setGUI(MyGameGUI g) {
-		this._gui = g;
-	}
+
 
 
 	/**** private data ***/
 
 	private MyGameGUI _gui;
+	
+	
+	
+	private void setGUI(MyGameGUI g) {
+		this._gui = g;
+	}
 
 }

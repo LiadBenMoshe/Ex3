@@ -766,7 +766,55 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 			return id;
 		}
 	}
+	
+	/**
+	 * asking user
+	 * @return int - choice of game manual or auto
+	 */
+	public static int dialogType(){
+		try {
+	        Object[] options = {"Manual game", "Auto game"};
+	        int x = JOptionPane.showOptionDialog(null, "Please choose type game\n"
+	        		+ "Automatic game is default option",
+	                "",
+	                JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[0]);
 
+			  if(x == -1)
+				  return 1;
+			  
+			  return x;
+	      
+		}catch(Exception err) {
+			return 1;
+		}
+	}
+	
+	/**
+	 * asking user
+	 * @return int - choice of game manual or auto
+	 */
+	public static int dialogKML(){
+		try {
+	        Object[] options = {"Yes", "No"};
+	        int x = JOptionPane.showOptionDialog(null, "Do you want to save that game as kml file\n"
+	        		+ "The file will locate at Your Project under Kml folder\n"
+	        		+ "No is default option",
+	                "",
+	                JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[0]);
+
+	     
+			  if(x == -1)
+				  return 1;
+			  
+			  return x;
+	      
+		}catch(Exception err) {
+			return 1;
+		}
+	}
+	
+	
+	
 /**
  * set frame visable only when call this function - false by default
  */

@@ -2,6 +2,11 @@ package gameClient;
 
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -15,16 +20,35 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class KML_Logger {
-	public static final String xmlFilePath = "hh.xml";
-	private Element _game;
-	private Document _document;
+import dataStructure.DGraph;
+import dataStructure.node_data;
 
-	public KML_Logger(int Scenario) {
+public class KML_Logger {
+	
+
+	/**
+	 * init kml template file for the game, adding icons and nodes placemarks
+	 * @param Scenario - number of the game
+	 * @param graph - for getting nodes coordinates
+	 */
+	public KML_Logger(int Scenario, DGraph graph) {
 		baseKML(Scenario);
+		set_kmlFilePath("Kml\\Scenario-"+Scenario+".kml");
+		// set node icon to kml
+		for(int i = 0; i < 8; i++) {
+			icon(i);;
+		}
+		Iterator<node_data> iter = graph.getV().iterator();
+		while(iter.hasNext()) {
+			node_data current = iter.next();
+			Placemark(7, current.getLocation().x(), current.getLocation().y(), currentTime());
+		}
 	}
 
-
+	/**
+	 * building the template format for kml
+	 * @param Scenario - Scenario number of the game
+	 */
 	public void baseKML(int Scenario){
 		try {
 			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
@@ -41,7 +65,7 @@ public class KML_Logger {
 			root.setAttributeNode(attr_kml);
 			getDocument().appendChild(root);
 
-			setGame(getDocument().createElement("game"));
+			setGame(getDocument().createElement("Document"));
 			root.appendChild(this.getGame());
 
 			Element GameName = getDocument().createElement("name");
@@ -49,59 +73,115 @@ public class KML_Logger {
 			this.getGame().appendChild(GameName);
 
 		} catch (ParserConfigurationException e) {
-		
+
 			e.printStackTrace();
 		}
 
 	}
 
 
-	public static void main(String argv[]) {
-		KML_Logger k = new KML_Logger(3);
-		k.icon(1);
-		k.icon(2);
-		k.Placemark(3, 12, 11, 789456);
-		k.Placemark(7, 23, 11, 789456);
-		k.Placemark(3, 11, 11, 789456);
-		k.KMLtoFile();
-		
+	private String GetIconHref(int id) {
+		String icon = "";
+		if(id == 0) {
+			icon = "http://maps.google.com/mapfiles/kml/pal4/icon54.png";
+		}
+		else if(id == 1) {
+			icon = "http://maps.google.com/mapfiles/kml/pal4/icon23.png";
+		}
+		else if(id == 2) {
+			icon = "http://maps.google.com/mapfiles/kml/pal4/icon7.png";
+		}
+		else if(id == 3) {
+			icon = "http://maps.google.com/mapfiles/kml/pal2/icon48.png";
+		}
+		else if(id == 4) {
+			icon = "http://maps.google.com/mapfiles/kml/pal3/icon18.png";
+		}
+		//banana
+		else if(id == 5) {
+			icon = "http://maps.google.com/mapfiles/kml/paddle/ylw-blank.png";
+		}
+		// apple
+		else if(id == 6) {
+			icon = "http://maps.google.com/mapfiles/kml/paddle/pink-blank.png";
+		}
+		// nodes
+		else {
+			icon = "http://maps.google.com/mapfiles/kml/pushpin/purple-pushpin.png";
+		}
+		return icon;
 	}
-	public void icon(int robot_id) {
+
+	
+	private String IconId(int id) {
+		String ans = "";
+		if(id < 5) {
+			ans = "Robot-"+id;
+		}
+		else if(id >=5 && id < 7){
+			ans = "Fruit-"+id;
+		}
+		else {
+			ans = "Node";
+		}
+		return ans;
+	}
+
+
+	
+	/**
+	 * building the icon format for kml
+	 * @param id - (robots/node/fruits)
+	 */
+	public void icon(int id) {
 		Element Style = getDocument().createElement("Style");
-        Attr attr = getDocument().createAttribute("id");
-        attr.setValue("#Robot-"+robot_id);
-        Style.setAttributeNode(attr);
+		Attr attr = getDocument().createAttribute("id");
+		
+		attr.setValue(IconId(id));
+
+		Style.setAttributeNode(attr);
 		getGame().appendChild(Style);
 		Element IconStyle = getDocument().createElement("IconStyle");
 		Style.appendChild(IconStyle);
 		Element Icon= getDocument().createElement("Icon");
 		Element href = getDocument().createElement("href");
-		href.appendChild(getDocument().createTextNode("<div>Icons made by <a href=\"https://www.flaticon.com/authors/roundicons-freebies\" title=\"Roundicons Freebies\">Roundicons Freebies</a> from <a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a></div>"));
+
+
+		href.appendChild(getDocument().createTextNode(GetIconHref(id)));
 		Icon.appendChild(href);
 		IconStyle.appendChild(Icon);
 		Element hotSpot= getDocument().createElement("hotSpot");
 		Attr yunits = getDocument().createAttribute("yunits");
-		yunits.setValue("fraction");
-		
+		yunits.setValue("pixels");
+
 		Attr xunits = getDocument().createAttribute("xunits");
-		xunits.setValue("fraction");
+		xunits.setValue("pixels");
 
 		Attr y = getDocument().createAttribute("y");
-		y.setValue(".5");
-		
+		y.setValue("1");
+
 		Attr x = getDocument().createAttribute("x");
-		x.setValue("0");
-		
-		hotSpot.setAttributeNode(yunits);
-		hotSpot.setAttributeNode(xunits);
-		hotSpot.setAttributeNode(y);
+		x.setValue("32");
 		hotSpot.setAttributeNode(x);
+		hotSpot.setAttributeNode(y);
+		hotSpot.setAttributeNode(xunits);
+
+		hotSpot.setAttributeNode(yunits);
+
+
 		IconStyle.appendChild(hotSpot);
 	}
-	
-	
 
-	public void Placemark(int rob_id, double posX, double posY, long time){
+
+
+	/**
+	 * building the placemark format for kml
+	 * @param id - (robots/node/fruits)
+	 * @param posX - coordinates
+	 * @param posY - coordinates
+	 * @param time - current time
+	 */
+	public void Placemark(int id, double posX, double posY, String time){
 		Element Placemark = getDocument().createElement("Placemark");
 		getGame().appendChild(Placemark);
 		Element TimeRemaining= getDocument().createElement("TimeStamp");
@@ -110,17 +190,19 @@ public class KML_Logger {
 		when.appendChild(getDocument().createTextNode(""+time));
 		TimeRemaining.appendChild(when);
 		Element robot = getDocument().createElement("styleUrl");
-		robot.appendChild(getDocument().createTextNode("#Robot-"+rob_id));
+		robot.appendChild(getDocument().createTextNode(IconId(id)));
 		Placemark.appendChild(robot);
 		Element point = getDocument().createElement("Point");
 		Placemark.appendChild(point);
 		Element coordinates = getDocument().createElement("coordinates");
-		coordinates.appendChild(getDocument().createTextNode(""+posX+","+posY+",0"));
-		Placemark.appendChild(coordinates);
+		coordinates.appendChild(getDocument().createTextNode(""+posX+","+posY+",0.0"));
+		point.appendChild(coordinates);
+	
 	}
+	
 	/**
-	 * create the xml file
-	 * transform the DOM Object to an XML File
+	 * create the kml file
+	 * transform the DOM Object to an kML File
 	 */
 	public void KMLtoFile() {
 		try {
@@ -129,20 +211,41 @@ public class KML_Logger {
 			transformer = transformerFactory.newTransformer();
 
 			DOMSource domSource = new DOMSource(getDocument());
-			StreamResult streamResult = new StreamResult(new File(xmlFilePath));
-		
+			StreamResult streamResult = new StreamResult(new File(get_kmlFilePath()));
+
 			transformer.transform(domSource, streamResult);
-				
-			System.out.println("workds");
+
+			System.out.println("File Saved");
 		} catch (TransformerConfigurationException e) {
-		
+
 			e.printStackTrace();
 
 		} catch(TransformerException e) {
-		
+
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * getting the time in specific foramt for kml
+	 * @return string - time 
+	 */
+	public String currentTime(){
+		Date date = new Date();
+		DateFormat d1 = new SimpleDateFormat("yyyy-MM-dd");
+		DateFormat d2 = new SimpleDateFormat("HH:mm:ss");
+		String time1 = d1.format(date);
+		String time2 = d2.format(date);
+		return time1+"T"+time2+"Z";
+		}
+	/**** private data *****/
+	private Element _game;
+	private Document _document;
+	private String _kmlFilePath;
+
+
+
+
 
 
 	public Element getGame() {
@@ -161,6 +264,16 @@ public class KML_Logger {
 
 	public void setDocument(Document _document) {
 		this._document = _document;
+	}
+
+
+	private String get_kmlFilePath() {
+		return _kmlFilePath;
+	}
+
+
+	private void set_kmlFilePath(String _kmlFilePath) {
+		this._kmlFilePath = _kmlFilePath;
 	}
 
 
