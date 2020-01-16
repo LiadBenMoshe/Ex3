@@ -138,13 +138,17 @@ public class ManualPlayer {
 		return _gui;
 	}
 
-	private void setGUI(MyGameGUI g) {
-		this._gui = g;
-	}
+
 
 
 	/**** private data ***/
 
 	private MyGameGUI _gui;
+	
+	
+	
+	private void setGUI(MyGameGUI g) {
+		this._gui = g;
+	}
 
 }

@@ -24,11 +24,16 @@ import dataStructure.DGraph;
 import dataStructure.node_data;
 
 public class KML_Logger {
-	public static final String xmlFilePath = "Kml\\file.xml";
+	
 
-
+	/**
+	 * init kml template file for the game, adding icons and nodes placemarks
+	 * @param Scenario - number of the game
+	 * @param graph - for getting nodes coordinates
+	 */
 	public KML_Logger(int Scenario, DGraph graph) {
 		baseKML(Scenario);
+		set_kmlFilePath("Kml\\Scenario-"+Scenario+".kml");
 		// set node icon to kml
 		for(int i = 0; i < 8; i++) {
 			icon(i);;
@@ -40,7 +45,10 @@ public class KML_Logger {
 		}
 	}
 
-
+	/**
+	 * building the template format for kml
+	 * @param Scenario - Scenario number of the game
+	 */
 	public void baseKML(int Scenario){
 		try {
 			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
@@ -120,6 +128,11 @@ public class KML_Logger {
 	}
 
 
+	
+	/**
+	 * building the icon format for kml
+	 * @param id - (robots/node/fruits)
+	 */
 	public void icon(int id) {
 		Element Style = getDocument().createElement("Style");
 		Attr attr = getDocument().createAttribute("id");
@@ -161,6 +174,13 @@ public class KML_Logger {
 
 
 
+	/**
+	 * building the placemark format for kml
+	 * @param id - (robots/node/fruits)
+	 * @param posX - coordinates
+	 * @param posY - coordinates
+	 * @param time - current time
+	 */
 	public void Placemark(int id, double posX, double posY, String time){
 		Element Placemark = getDocument().createElement("Placemark");
 		getGame().appendChild(Placemark);
@@ -176,11 +196,13 @@ public class KML_Logger {
 		Placemark.appendChild(point);
 		Element coordinates = getDocument().createElement("coordinates");
 		coordinates.appendChild(getDocument().createTextNode(""+posX+","+posY+",0.0"));
-		Placemark.appendChild(coordinates);
+		point.appendChild(coordinates);
+	
 	}
+	
 	/**
-	 * create the xml file
-	 * transform the DOM Object to an XML File
+	 * create the kml file
+	 * transform the DOM Object to an kML File
 	 */
 	public void KMLtoFile() {
 		try {
@@ -189,7 +211,7 @@ public class KML_Logger {
 			transformer = transformerFactory.newTransformer();
 
 			DOMSource domSource = new DOMSource(getDocument());
-			StreamResult streamResult = new StreamResult(new File(xmlFilePath));
+			StreamResult streamResult = new StreamResult(new File(get_kmlFilePath()));
 
 			transformer.transform(domSource, streamResult);
 
@@ -204,17 +226,22 @@ public class KML_Logger {
 		}
 	}
 	
+	/**
+	 * getting the time in specific foramt for kml
+	 * @return string - time 
+	 */
 	public String currentTime(){
 		Date date = new Date();
-		DateFormat d1 = new SimpleDateFormat("yyyy/MM/dd");
+		DateFormat d1 = new SimpleDateFormat("yyyy-MM-dd");
 		DateFormat d2 = new SimpleDateFormat("HH:mm:ss");
 		String time1 = d1.format(date);
 		String time2 = d2.format(date);
-		return time1+" "+time2;
+		return time1+"T"+time2+"Z";
 		}
 	/**** private data *****/
 	private Element _game;
 	private Document _document;
+	private String _kmlFilePath;
 
 
 
@@ -237,6 +264,16 @@ public class KML_Logger {
 
 	public void setDocument(Document _document) {
 		this._document = _document;
+	}
+
+
+	private String get_kmlFilePath() {
+		return _kmlFilePath;
+	}
+
+
+	private void set_kmlFilePath(String _kmlFilePath) {
+		this._kmlFilePath = _kmlFilePath;
 	}
 
 

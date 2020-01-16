@@ -51,33 +51,35 @@ import sun.audio.ContinuousAudioDataStream;
 
 public class MyGameGUI implements Runnable {
 
+	/**
+	 * init the game by getting input from user about the scenario number and type of game(manual or auto)
+	 */
 	public MyGameGUI() {
-		int scencario = StdDraw.dialogScenario();
+		int scenario = StdDraw.dialogScenario();
+		game_service game = Game_Server.getServer(scenario); // you have [0,23] games
 
-		game_service game = Game_Server.getServer(scencario); // you have [0,23] games
-
-
-		
 		// user choice of game type (manual or automatic)
 		setType(StdDraw.dialogType());
 		
-
 		DGraph graph = new DGraph();
 		graph.init(game.getGraph());
 		Graph_Algo graphAlgo = new Graph_Algo(graph);
-		setKml(new KML_Logger(scencario, graph));
+		setKml(new KML_Logger(scenario, graph));
 		setGraphAlgo(graphAlgo);
 		setGame(game);
 		init();
 	}
 
-	/**
-	 * icons from https://www.flaticon.com/
-	 */
+    /**
+     * init the gui windo using stdDraw, fruits and robot frpm the game given jsons
+     * setting the game to manual or automatic game 
+     * then drawing everything on canvas
+     * and start the game thread
+     */
 	private void init() {
 		StdDraw.setCanvasSize(1050, 600);
-		set_x(this.getGraphAlgo().get_Dgraph().GraphScaleX());
-		set_y(this.getGraphAlgo().get_Dgraph().GraphScaleY());
+		set_x(getGraphAlgo().get_Dgraph().GraphScaleX());
+		set_y(getGraphAlgo().get_Dgraph().GraphScaleY());
 		Fruits();
 		drawGraph();
 		StdDraw.Visible();
@@ -87,14 +89,14 @@ public class MyGameGUI implements Runnable {
 		}else {
 			setManual(new ManualPlayer(this));
 		}
-
-
 		drawFruits();
 		drawRobots();
 		StdDraw.enableDoubleBuffering();
 		StdDraw.show();
 
-		run();
+		t1 = new Thread(this);
+		t1.start();
+		
 	}
 
 	private void repaint() {
@@ -106,26 +108,21 @@ public class MyGameGUI implements Runnable {
 	}
 
 	/**
-	 * thread that start the game
+	 * thread that start the game, play music and repaint
 	 */
+//	@Override
 	public void run() {
 		this.getGame().startGame();
 		music();
 		while(this.getGame().isRunning()) {
-
+			
 			if(getType() == 1) {
 				this.getAutoPlayer().moveRobotsAuto();
 			}else {
 				this.getManual().moveRobotsGUI();
 			}
-
-			try {
-				/* Thread.sleep(0); */
+ 
 				repaint();
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-
 		}
 		
 		// game finished print results
@@ -149,16 +146,14 @@ public class MyGameGUI implements Runnable {
 	} catch (JSONException e) {
 		e.printStackTrace();
 	}
-
-		//JOptionPane.showMessageDialog(null, "Game Over: " + results);
-		
 		if(StdDraw.dialogKML() == 0) {
 			getKml().KMLtoFile();
 		}
 	}
 
 	/**
-	 * drawRobots
+	 * drawRobots using pictures from data folder
+	 * icons from https://www.flaticon.com/
 	 */
 	private void drawRobots() {
 		Iterator<Robots> r_iter = this.getRobList().iterator();
@@ -167,19 +162,12 @@ public class MyGameGUI implements Runnable {
 			StdDraw.picture(r.getPosX(), r.getPosY(), "data\\p" + r.getId() + ".png");
 
 		}
-
-		/*
-		 * StdDraw.setPenColor(Color.black); StdDraw.setPenRadius(0.06);
-		 * StdDraw.text(get_x().get_max()-0.007,get_y().get_max()
-		 * ,"for pickacho:0 for balbazor:1 for squirtel:2 for carmander:3 for snorlax:4"
-		 * );
-		 * 
-		 */
 	}
 
 
 	/**
-	 * drawFruits
+	 * drawFruits using pictures from data folder
+	 * icons from https://www.flaticon.com/
 	 */
 	private void drawFruits() {
 		// drawGraph Robots
@@ -216,13 +204,12 @@ public class MyGameGUI implements Runnable {
 		StdDraw.picture((this.get_x().get_max()+this.get_x().get_min())/2, (this.get_y().get_min()+this.get_y().get_max())/2, "data\\map.png", 0.05,
 				0.02);
 
-
-
 		// directions compute;
 		double directionX = 0;
 		double directionY = 0;
 
 		// for drawing edge weight
+		
 		/*
 		 * double middleX = 0; double middleY = 0;
 		 */
@@ -252,8 +239,9 @@ public class MyGameGUI implements Runnable {
 				StdDraw.setPenColor(Color.CYAN);
 				StdDraw.setPenRadius(0.015);
 				StdDraw.point(directionX, directionY);
+				
+				
 				// drawing edge weight
-
 				/*
 				 * middleX = (current.getLocation().x() +
 				 * current_edge.getNodeDest().getLocation().x()) / 2; middleY =
@@ -282,7 +270,10 @@ public class MyGameGUI implements Runnable {
 	}
 
 
-
+/**
+ * init FruitList then use the given Json for the game 
+ * create new fruits objects
+ */
 	private void Fruits() {
 		// adding fruits
 		this.setFruitList(new ArrayList<Fruits>());
@@ -292,6 +283,9 @@ public class MyGameGUI implements Runnable {
 		}
 	}
 
+	/**
+	 * playing music while the game running
+	 */
 	 public static void music() 
 	    {       
 	        AudioPlayer MGP = AudioPlayer.player;
@@ -360,6 +354,7 @@ public class MyGameGUI implements Runnable {
 
 
 	/****private  data *****/
+	private Thread t1;
 	private AutomaticPlayer _auto;
 	private ManualPlayer _manual;
 	private Range _x, _y;
