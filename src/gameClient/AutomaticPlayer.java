@@ -149,6 +149,7 @@ public class AutomaticPlayer {
 		}
 		// not found
 
+
 		ans[0] = -1;
 		ans[1] = -1;
 		return ans;
@@ -167,6 +168,7 @@ public class AutomaticPlayer {
 			return true;
 		return false;
 	}
+
 
 	/**
 	 * reading data from the server game, init the fruits and robots to 

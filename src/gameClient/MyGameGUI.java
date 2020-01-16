@@ -2,12 +2,7 @@ package gameClient;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,18 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import java.util.Iterator;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,7 +44,7 @@ public class MyGameGUI implements Runnable {
 
 		// user choice of game type (manual or automatic)
 		setType(StdDraw.dialogType());
-		
+
 		DGraph graph = new DGraph();
 		graph.init(game.getGraph());
 		Graph_Algo graphAlgo = new Graph_Algo(graph);
@@ -68,12 +54,12 @@ public class MyGameGUI implements Runnable {
 		init();
 	}
 
-    /**
-     * init the gui windo using stdDraw, fruits and robot frpm the game given jsons
-     * setting the game to manual or automatic game 
-     * then drawing everything on canvas
-     * and start the game thread
-     */
+	/**
+	 * init the gui windo using stdDraw, fruits and robot frpm the game given jsons
+	 * setting the game to manual or automatic game 
+	 * then drawing everything on canvas
+	 * and start the game thread
+	 */
 	private void init() {
 		StdDraw.setCanvasSize(1050, 600);
 		set_x(getGraphAlgo().get_Dgraph().GraphScaleX());
@@ -94,7 +80,7 @@ public class MyGameGUI implements Runnable {
 
 		t1 = new Thread(this);
 		t1.start();
-		
+
 	}
 
 	private void repaint() {
@@ -117,9 +103,8 @@ public class MyGameGUI implements Runnable {
 				this.getAutoPlayer().moveRobotsAuto();
 			}else {
 				this.getManual().moveRobotsGUI();
-
 			}
-				repaint();
+			repaint();
 		}
 
 		// game finished print results
@@ -131,7 +116,7 @@ public class MyGameGUI implements Runnable {
 			JSONObject GameServer = resultsJson.getJSONObject("GameServer");
 			int moves = GameServer.getInt("moves");
 			int Score = GameServer.getInt("grade");
-			
+
 			StdDraw.setPenColor(Color.BLACK);
 			StdDraw.setFont(new Font("Arial", Font.PLAIN, 40));
 			StdDraw.text(0, 3, "Game over:");
@@ -139,10 +124,10 @@ public class MyGameGUI implements Runnable {
 			StdDraw.text(0,2, "you did "+moves+" Moves");
 			StdDraw.text(0,1.5, "Your Grade is: "+Score);
 			StdDraw.show();
-		
-	} catch (JSONException e) {
-		e.printStackTrace();
-	}
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 		if(StdDraw.dialogKML() == 0) {
 			getKml().KMLtoFile();
 		}
@@ -156,8 +141,13 @@ public class MyGameGUI implements Runnable {
 		Iterator<Robots> r_iter = this.getRobList().iterator();
 		while (r_iter.hasNext()) {
 			Robots r = r_iter.next();
-			if(r.getSpeed()==5) {
+
+			if(r.getSpeed()==2) {
+				StdDraw.picture(r.getPosX(), r.getPosY(), "icons\\p" + (r.getId()+10) + ".png");
+			}
+			else if(r.getSpeed()==5) {
 				StdDraw.picture(r.getPosX(), r.getPosY(), "icons\\p" + (r.getId()+5) + ".png");
+
 
 			}
 			else
@@ -211,7 +201,7 @@ public class MyGameGUI implements Runnable {
 		double directionY = 0;
 
 		// for drawing edge weight
-		
+
 		/*
 		 * double middleX = 0; double middleY = 0;
 		 */
@@ -241,8 +231,8 @@ public class MyGameGUI implements Runnable {
 				StdDraw.setPenColor(Color.CYAN);
 				StdDraw.setPenRadius(0.015);
 				StdDraw.point(directionX, directionY);
-				
-				
+
+
 				// drawing edge weight
 				/*
 				 * middleX = (current.getLocation().x() +
@@ -272,10 +262,10 @@ public class MyGameGUI implements Runnable {
 	}
 
 
-/**
- * init FruitList then use the given Json for the game 
- * create new fruits objects
- */
+	/**
+	 * init FruitList then use the given Json for the game 
+	 * create new fruits objects
+	 */
 	private void Fruits() {
 		// adding fruits
 		this.setFruitList(new ArrayList<Fruits>());
@@ -284,6 +274,7 @@ public class MyGameGUI implements Runnable {
 			this.getFruitList().add(new Fruits(iter.next()));
 		}
 	}
+
 
 
 	/**
