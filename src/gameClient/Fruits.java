@@ -12,6 +12,12 @@ public class Fruits {
 	
 	
 	
+	public Fruits() {
+		// TODO Auto-generated constructor stub
+	}
+
+
+
 	/**
 	 * init new graph from string
 	 * @param g - string with json format
