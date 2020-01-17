@@ -11,6 +11,6 @@ the robot on the graph need to eat the apple and the banana icons as fast as the
 
 the automatic game need the play the best case that can be,
 
-in the manual game you can choose robot in the keyboard ,and move them with the mause.
+in the manual game you can choose robot in the keyboard ,and move them with the mouse.
 
-another opstion is that the player can save his game to a KML file and ran it on Google Eerth.
+another option is that the player can save his game to a KML file and upload it on Google Eerth.
