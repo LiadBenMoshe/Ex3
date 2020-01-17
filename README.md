@@ -1,16 +1,15 @@
 # Ex3
-the main goal in this project is to create game gui on a server
+This project is about creating a game with gui.
 
-that have a automatic game and manual game.
+This game based on a our previous project, that you are more then welcome to explore  https://github.com/Benitk/OOP-Assignment-Two
 
-the game gui base on a graph , 
+All the data about the robot ,the fruit ,the nodes and the edges ,read from the server as Json string;
 
-all the data about the robot ,the fruit ,the dots,read from a Json file;
+The robots on the graph need to pickup the red and yellow pokeball icons as fast as they can to gain points.
+there is two types of game.
 
-the robot on the graph need to eat the apple and the banana icons as fast as they can and gain point.
+The Automatic game play the best case that can be,
 
-the automatic game need the play the best case that can be,
+The Manual game you choose the robots with the keyboard ,and move them with the mouse.
 
-in the manual game you can choose robot in the keyboard ,and move them with the mouse.
-
-another option is that the player can save his game to a KML file and upload it on Google Eerth.
+In the end of any game there is an option to export the game in to an KML file.
