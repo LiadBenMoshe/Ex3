@@ -6,7 +6,7 @@ All the data about the robot ,the fruit ,the nodes and the edges ,read from the 
 
 The robots on the graph need to pickup the red and yellow pokeball icons as fast as they can to gain points.
 
-There is two types of game.
+There are two modes of game.
 1. Automatic game play the best case that can be,
 2. Manual game you choose the robots with the keyboard ,and move them with the mouse.
 
