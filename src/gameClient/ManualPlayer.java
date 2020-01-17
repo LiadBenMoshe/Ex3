@@ -7,7 +7,6 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import algorithms.Graph_Algo;
 import dataStructure.edgeData;
 import dataStructure.edge_data;
 import utils.Point3D;
@@ -27,12 +26,13 @@ public class ManualPlayer {
 	
 
 	/**
-	 * Moves each of the robots along the edge, in case the robot is on a node the
-	 * next destination (next edge) is chosen (randomly).
-	 * 
-	 * @param game
-	 * @param gg
-	 * @param log
+	 * reading data from the server game, init the fruits and robots to 
+	 * the new values each call of this function 
+	 * in case the robot has no dest - aka (-1) 
+	 * send it to nextNodeGUI that get new dest to the robot
+	 * if there is more then one robot you can control each separately by clicking
+	 * the number (robot_id) on the keyboard
+	 * at the same time send placemark data to the kml_logger class
 	 */
 	public void moveRobotsGUI() {
 		char c='0';
@@ -67,8 +67,6 @@ public class ManualPlayer {
 						StdDraw.setPlayer(j);
 				}
 				
-				
-				
 				if (r.getDest() == -1) {
 					getGUI().getGame().chooseNextEdge(StdDraw.getPlayer(), nextNodeGUI(r.getSrc()));
 
@@ -79,11 +77,9 @@ public class ManualPlayer {
 	}
 
 	/**
-	 * a very simple random walk implementation!
-	 * 
-	 * @param g
-	 * @param src
-	 * @return
+	 * listen to mouse pressed on the nodes if there is an edge from the robot current src
+	 * to the user clicked node it will return that as dest
+	 * @param int - next dest to the robot
 	 */
 	private int nextNodeGUI(int src) {
 		int nextDest = -1;
@@ -109,7 +105,8 @@ public class ManualPlayer {
 		return nextDest;
 	}
 	/**
-	 * get number of robots
+	 * asking the user to place the robots at the start of the game
+	 * on one of the nodes
 	 */
 	private void RobotsStartPosition() {
 		JSONObject GameJson;

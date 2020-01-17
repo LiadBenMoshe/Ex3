@@ -13,7 +13,6 @@ import java.util.ArrayList;
 
 import java.util.Iterator;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -72,6 +71,7 @@ public class MyGameGUI implements Runnable {
 			setAutoPlayer(new AutomaticPlayer(this));
 		}else {
 			setManual(new ManualPlayer(this));
+			StdDraw.ManualInstructions();
 		}
 		drawFruits();
 		drawRobots();
@@ -263,7 +263,7 @@ public class MyGameGUI implements Runnable {
 
 
 	/**
-	 * init FruitList then use the given Json for the game 
+	 * init FruitList then use the given Json from the game to
 	 * create new fruits objects
 	 */
 	private void Fruits() {
@@ -280,7 +280,7 @@ public class MyGameGUI implements Runnable {
 	/**
 	 * playing music while the game running
 	 */
-	 public static void music() 
+	 private void music() 
 	    {       
 	        AudioPlayer MGP = AudioPlayer.player;
 	        AudioStream BGM;

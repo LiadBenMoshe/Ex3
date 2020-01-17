@@ -33,7 +33,7 @@ public class KML_Logger {
 	 */
 	public KML_Logger(int Scenario, DGraph graph) {
 		baseKML(Scenario);
-		set_kmlFilePath("Kml\\Scenario-"+Scenario+".kml");
+		set_kmlFilePath("data\\"+Scenario+".kml");
 		// set node icon to kml
 		for(int i = 0; i < 8; i++) {
 			icon(i);;

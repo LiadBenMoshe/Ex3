@@ -61,14 +61,12 @@ import java.io.IOException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.TreeSet;
 import java.util.NoSuchElementException;
 import javax.imageio.ImageIO;
 
 import javax.swing.ImageIcon;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -76,8 +74,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
-
-import dataStructure.node_data;
 
 
 /**
@@ -768,8 +764,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	}
 	
 	/**
-	 * asking user
-	 * @return int - choice of game manual or auto
+	 * asking user his choice of game manual or auto
+	 * @return int - 0 - manual ,1 - auto
 	 */
 	public static int dialogType(){
 		try {
@@ -790,14 +786,14 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	}
 	
 	/**
-	 * asking user
+	 * asking user if he wants to save that game to kml file
 	 * @return int - choice of game manual or auto
 	 */
 	public static int dialogKML(){
 		try {
 	        Object[] options = {"Yes", "No"};
 	        int x = JOptionPane.showOptionDialog(null, "Do you want to save that game as kml file\n"
-	        		+ "The file will locate at Your Project under Kml folder\n"
+	        		+ "The file will locate at Your Project under data folder\n"
 	        		+ "No is default option",
 	                "",
 	                JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[0]);
@@ -813,6 +809,14 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		}
 	}
 	
+	public static void ManualInstructions(){
+		JOptionPane.showMessageDialog(frame, "Manual game instructions:\n"
+				+ "to control each robot you can use the keyboard number from [0, 4]\n"
+				+ "first robot has id of 0 and so on..\n"
+				+ "for moving them you can press on the mouse to every closest node\n"
+				+ "that has an edge to the current robot node\n"
+				+ "Enjoy!!");
+	}
 	
 	
 /**

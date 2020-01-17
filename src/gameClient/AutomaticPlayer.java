@@ -2,18 +2,14 @@ package gameClient;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import Server.game_service;
-import algorithms.Graph_Algo;
 import gameClient.Fruits;
 import utils.Point3D;
-import dataStructure.DGraph;
 import dataStructure.edgeData;
 import dataStructure.edge_data;
 import dataStructure.nodeData;
@@ -174,7 +170,8 @@ public class AutomaticPlayer {
 	 * reading data from the server game, init the fruits and robots to 
 	 * the new values each call of this function 
 	 * in case the robot has no dest - aka (-1) 
-	 * send it to ClosestNodeAuto/nextValueAuto 
+	 * send it to ClosestNodeAuto/nextValueAuto to create a new path to the robot
+	 * at the same time send placemark data to the kml_logger class
 	 */
 	public void moveRobotsAuto() {
 		// update fruit
@@ -223,7 +220,8 @@ public class AutomaticPlayer {
 				else if(r.getDest() == -1 && r.getTarget() != null) {
 					fruitLocation = nearestNode(r.getTarget());
 					robNodeList_size = r.getNextDest().size();
-					// fruit changes is place
+					
+					// fruit changes is place or other robot took it clear nextDest list
 					if(r.getNextDest().get(robNodeList_size - 1).getKey() != fruitLocation[1]) {
 						r.getNextDest().clear();
 					}
