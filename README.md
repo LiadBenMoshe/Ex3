@@ -4,7 +4,8 @@ This game based on a our previous project, that you are more then welcome to exp
 
 All the data about the robot ,the fruit ,the nodes and the edges ,read from the server as Json string.
 
-The robots on the graph need to pickup the red and yellow pokeball icons as fast as they can to gain points.
+The robots on the graph need to catch the red and yellow pokeball icons as fast as they can to gain points.
+The more you catch the speed of the robot is increase
 
 There are two modes of game.
 1. Automatic game play the best case that can be,
