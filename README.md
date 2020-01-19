@@ -12,3 +12,5 @@ There are two modes of game.
 2. Manual game you choose the robots with the keyboard ,and move them with the mouse.
 
 In the end of any game there is an option to export the game in to an KML file.
+
+<a href="https://ibb.co/Fn1sKfk"><img src="https://i.ibb.co/kMT3xrV/auto-game.png" alt="auto-game" border="0"></a>
