@@ -8,7 +8,7 @@ The robots on the graph need to catch the red and yellow pokeball icons as fast 
 The more you catch the speed of the robot is increase
 
 There are two modes of game.
-1. Automatic game play the best case that can be,
+1. Automatic game play the best case that can be.
 2. Manual game you choose the robots with the keyboard ,and move them with the mouse.
 
 In the end of any game there is an option to export the game in to an KML file.
