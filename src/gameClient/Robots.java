@@ -52,6 +52,31 @@ public class Robots {
 	}
 
 
+/**** private data ***/
+
+	private Fruits _target;
+	private ArrayList<node_data> _nextDest;
+	private int _id, _src, _dest;
+	private double _value, _posX, _posY;
+	private double _speed;
+	
+	/*** getters/setters ***/
+	
+	public Fruits getTarget() {
+		return _target;
+	}
+
+	public void setTarget(Fruits _target) {
+		this._target = _target;
+	}
+	
+	public ArrayList<node_data> getNextDest() {
+		return _nextDest;
+	}
+
+	public void setNextDest(ArrayList<node_data> list) {
+		this._nextDest = list;
+	}
 
 	public int getId() {
 		return _id;
@@ -62,9 +87,7 @@ public class Robots {
 	public int getDest() {
 		return _dest;
 	}
-	public double getValue() {
-		return _value;
-	}
+
 	public double getPosX() {
 		return _posX;
 	}
@@ -74,50 +97,29 @@ public class Robots {
 	public double getSpeed() {
 		return _speed;
 	}
-	public void setId(int _id) {
+	public double getValue() {
+		return _value;
+	}
+	
+	private void setId(int _id) {
 		this._id = _id;
 	}
-	public void setSrc(int _src) {
+	private void setSrc(int _src) {
 		this._src = _src;
 	}
-	public void setDest(int _dest) {
+	private void setDest(int _dest) {
 		this._dest = _dest;
 	}
-	public void setValue(double _value) {
+	private void setValue(double _value) {
 		this._value = _value;
 	}
-	public void setPosX(double _posX) {
+	private void setPosX(double _posX) {
 		this._posX = _posX;
 	}
-	public void setPosY(double _posY) {
+	private void setPosY(double _posY) {
 		this._posY = _posY;
 	}
-	public void setSpeed(double _speed) {
+	private void setSpeed(double _speed) {
 		this._speed = _speed;
 	}
-
-	public ArrayList<node_data> getNextDest() {
-		return _nextDest;
-	}
-
-	public void setNextDest(ArrayList<node_data> list) {
-		this._nextDest = list;
-	}
-
-
-	public Fruits getTarget() {
-		return _target;
-	}
-
-	public void setTarget(Fruits _target) {
-		this._target = _target;
-	}
-
-
-	private Fruits _target;
-	private ArrayList<node_data> _nextDest;
-	private int _id, _src, _dest;
-	private double _value, _posX, _posY;
-	private double _speed;
-
 }

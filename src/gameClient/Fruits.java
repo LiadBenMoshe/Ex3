@@ -45,8 +45,23 @@ public class Fruits {
 		} catch (JSONException e) {e.printStackTrace();}
 
 	}
+	/*** private data ***/
 
+	private boolean _onTarget;
+	private int _type;
+	private double _value, _posX, _posY;
+	
+	/*** getter/setters ***/
+	
 
+	public boolean isTarget() {
+		return _onTarget;
+	}
+
+	public void setIsTarget(boolean _onTarget) {
+		this._onTarget = _onTarget;
+	}
+	
 	public int getType() {
 		return _type;
 	}
@@ -59,32 +74,18 @@ public class Fruits {
 	public double getPosY() {
 		return _posY;
 	}
-	public void setType(int _type) {
+	private void setType(int _type) {
 		this._type = _type;
 	}
-	public void setValue(double _value) {
+	private void setValue(double _value) {
 		this._value = _value;
 	}
-	public void setPosX(double _posX) {
+	private void setPosX(double _posX) {
 		this._posX = _posX;
 	}
-	public void setPosY(double _posY) {
+	private void setPosY(double _posY) {
 		this._posY = _posY;
 	}
 
 
-	public boolean isTarget() {
-		return _onTarget;
-	}
-
-
-
-	public void setIsTarget(boolean _onTarget) {
-		this._onTarget = _onTarget;
-	}
-
-
-	private boolean _onTarget;
-	private int _type;
-	private double _value, _posX, _posY;
 }

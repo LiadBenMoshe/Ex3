@@ -811,10 +811,10 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	
 	public static void ManualInstructions(){
 		JOptionPane.showMessageDialog(frame, "Manual game instructions:\n"
-				+ "to control each robot you can use the keyboard number from [0, 4]\n"
-				+ "first robot has id of 0 and so on..\n"
+				+ "to control each robot you must use the keyboard number from [0, 4] (keypad wont work!)\n"
+				+ "the first robot has id of 0 and so on..\n"
 				+ "for moving them you can press on the mouse to every closest node\n"
-				+ "that has an edge to the current robot node\n"
+				+ "that has an edge to the current robot\n"
 				+ "Enjoy!!");
 	}
 	

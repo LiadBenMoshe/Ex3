@@ -49,7 +49,7 @@ public class KML_Logger {
 	 * building the template format for kml
 	 * @param Scenario - Scenario number of the game
 	 */
-	public void baseKML(int Scenario){
+	private void baseKML(int Scenario){
 		try {
 			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 
@@ -136,38 +136,32 @@ public class KML_Logger {
 	public void icon(int id) {
 		Element Style = getDocument().createElement("Style");
 		Attr attr = getDocument().createAttribute("id");
-		
 		attr.setValue(IconId(id));
-
 		Style.setAttributeNode(attr);
 		getGame().appendChild(Style);
+		
 		Element IconStyle = getDocument().createElement("IconStyle");
 		Style.appendChild(IconStyle);
 		Element Icon= getDocument().createElement("Icon");
 		Element href = getDocument().createElement("href");
-
-
 		href.appendChild(getDocument().createTextNode(GetIconHref(id)));
 		Icon.appendChild(href);
 		IconStyle.appendChild(Icon);
+		
 		Element hotSpot= getDocument().createElement("hotSpot");
 		Attr yunits = getDocument().createAttribute("yunits");
 		yunits.setValue("pixels");
-
 		Attr xunits = getDocument().createAttribute("xunits");
 		xunits.setValue("pixels");
-
 		Attr y = getDocument().createAttribute("y");
 		y.setValue("1");
-
 		Attr x = getDocument().createAttribute("x");
 		x.setValue("32");
+		
 		hotSpot.setAttributeNode(x);
 		hotSpot.setAttributeNode(y);
 		hotSpot.setAttributeNode(xunits);
-
 		hotSpot.setAttributeNode(yunits);
-
 
 		IconStyle.appendChild(hotSpot);
 	}
@@ -238,6 +232,7 @@ public class KML_Logger {
 		String time2 = d2.format(date);
 		return time1+"T"+time2+"Z";
 		}
+	
 	/**** private data *****/
 	private Element _game;
 	private Document _document;
@@ -245,14 +240,13 @@ public class KML_Logger {
 
 
 
-
-
-
-	public Element getGame() {
+	/*** getters/setter ***/
+	
+	private Element getGame() {
 		return _game;
 	}
 
-	public void setGame(Element _game) {
+	private void setGame(Element _game) {
 		this._game = _game;
 	}
 
@@ -262,7 +256,7 @@ public class KML_Logger {
 	}
 
 
-	public void setDocument(Document _document) {
+	private void setDocument(Document _document) {
 		this._document = _document;
 	}
 

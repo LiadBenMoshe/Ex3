@@ -209,7 +209,7 @@ public class AutomaticPlayer {
 						r.setTarget(null);
 
 					}
-					if(r.getSpeed() < 3 && getGUI().getRobList().size() < 2) {
+					if(r.getSpeed() < 2. && getGUI().getRobList().size() < 2) {
 						getGUI().getGame().chooseNextEdge(i, nextValueAuto(r.getSrc(), i));
 					}
 					else {
@@ -371,16 +371,17 @@ public class AutomaticPlayer {
 		}
 	}
 
-	public MyGameGUI getGUI() {
-		return _gui;
-	}
+
 
 	/*** private data ****/
 
 	private MyGameGUI _gui;
 	private final double eps = 0.000001;
 	
-	
+	/*** getters/setters ***/
+	public MyGameGUI getGUI() {
+		return _gui;
+	}
 	
 	private void setGUI(MyGameGUI _gui) {
 		this._gui = _gui;

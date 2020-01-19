@@ -78,8 +78,8 @@ public class MyGameGUI implements Runnable {
 		StdDraw.enableDoubleBuffering();
 		StdDraw.show();
 
-		t1 = new Thread(this);
-		t1.start();
+		_t = new Thread(this);
+		_t.start();
 
 	}
 
@@ -110,6 +110,9 @@ public class MyGameGUI implements Runnable {
 		// game finished print results
 		String results = this.getGame().toString();
 		StdDraw.clear();
+		// drawing map
+		StdDraw.picture((this.get_x().get_max()+this.get_x().get_min())/2, (this.get_y().get_min()+this.get_y().get_max())/2, "icons\\map.png", 0.05,
+				0.02);
 		StdDraw.setScale(-5, 5);
 		try {
 			JSONObject resultsJson = new JSONObject(results);
@@ -167,12 +170,12 @@ public class MyGameGUI implements Runnable {
 		while (f_iter.hasNext()) {
 			Fruits f = f_iter.next();
 			if (f.getType() == 1) {
-				StdDraw.picture(f.getPosX(), f.getPosY(), "icons\\apple.png");
+				StdDraw.picture(f.getPosX(), f.getPosY(), "icons\\redpoke.png");
 
 			}
 			// type -1
 			else {
-				StdDraw.picture(f.getPosX(), f.getPosY(), "icons\\banana.png");
+				StdDraw.picture(f.getPosX(), f.getPosY(), "icons\\yellowpoke.png");
 			}
 		}
 
@@ -188,11 +191,14 @@ public class MyGameGUI implements Runnable {
 		StdDraw.clear();
 		Range x = this.get_x();
 		Range y = this.get_y();
+		
+		
 
-		StdDraw.setXscale(x.get_min() - x.get_min() * 0.00001, x.get_max() + x.get_min() * 0.00001);
-		StdDraw.setYscale(y.get_min() - y.get_min() * 0.00001, y.get_max() + y.get_min() * 0.00001);
+		StdDraw.setXscale(x.get_min() - x.get_min() * (_eps*_eps*10), x.get_max() + x.get_min() * (_eps*_eps*10));
+		StdDraw.setYscale(y.get_min() - y.get_min() * (_eps*_eps*10), y.get_max() + y.get_min() * (_eps*_eps*10));
 
 
+		// drawing map
 		StdDraw.picture((this.get_x().get_max()+this.get_x().get_min())/2, (this.get_y().get_min()+this.get_y().get_max())/2, "icons\\map.png", 0.05,
 				0.02);
 
@@ -216,7 +222,7 @@ public class MyGameGUI implements Runnable {
 			// drawGraph edges
 			while (iter_edge.hasNext()) {
 				StdDraw.setPenColor(Color.BLACK);
-				StdDraw.setPenRadius(0.005);
+				StdDraw.setPenRadius(_eps*5);
 				edgeData current_edge = (edgeData) iter_edge.next();
 
 				// calculations
@@ -252,12 +258,20 @@ public class MyGameGUI implements Runnable {
 			// node key
 			StdDraw.setPenColor(Color.BLACK);
 			StdDraw.setFont(new Font("Arial", Font.PLAIN, 20));
-			StdDraw.text(current.getLocation().x(), current.getLocation().y() + 0.0001,
+			StdDraw.text(current.getLocation().x(), current.getLocation().y() + _eps/10,
 					String.valueOf(current.getKey()));
 
 			// drawGraph timer
-			StdDraw.text(this.get_x().get_max() - 0.002, this.get_y().get_min(), "Time: " + this.getGame().timeToEnd());
+			StdDraw.text(this.get_x().get_max() - _eps*2, this.get_y().get_min(), "Time: " + this.getGame().timeToEnd());
 
+			// manual game - drawing the icon near to the robot_id
+			if(getType() != 1) {
+				for(int i = 0; i < 5; i++) {
+					StdDraw.picture(get_x().get_min() + _eps*i + _eps, get_y().get_min()+_eps*_eps, "icons\\p"+i+".png");
+					StdDraw.text(get_x().get_min() + _eps*i + _eps, get_y().get_min()+_eps*_eps*300, "id-"+i+"");
+					}
+			}
+			
 		}
 	}
 
@@ -349,7 +363,7 @@ public class MyGameGUI implements Runnable {
 
 
 	/****private  data *****/
-	private Thread t1;
+	private Thread _t;
 	private AutomaticPlayer _auto;
 	private ManualPlayer _manual;
 	private Range _x, _y;
@@ -359,6 +373,7 @@ public class MyGameGUI implements Runnable {
 	private ArrayList<Fruits> _fruit_list;
 	private KML_Logger _kml;
 	private int _type;
+	private final double _eps = 0.001;
 
 	/******* getters/setter *****/
 
